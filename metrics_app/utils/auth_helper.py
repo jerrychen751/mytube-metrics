@@ -8,6 +8,7 @@ from . import database_helper as database
 
 class OAuth:
     def __init__(self) -> None:
+        os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
         load_dotenv()
         self.scopes = os.getenv("SCOPES", "").split(',')
         self.active_redirect_uri = os.getenv("REDIRECT_URI")
