@@ -1,0 +1,5 @@
+<h1>Login to MyTube Metrics</h1>
+<form action="{% url 'login' %}" method="post">
+    {% csrf_token %}
+    <button type="submit">Login with Google</button>
+</form>

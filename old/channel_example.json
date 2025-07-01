@@ -1,0 +1,55 @@
+{
+    "kind": "youtube#channelListResponse",
+    "etag": "THhvJBK6ZpGqaoicCP0EBBSoTN8",
+    "pageInfo": {
+        "totalResults": 1,
+        "resultsPerPage": 5
+    },
+    "items": [
+        {
+            "kind": "youtube#channel",
+            "etag": "ATIuP3zWAob2GzPBiA7bTlR1b1E",
+            "id": "UCGWkDcYbDKP9r--ym28YwAQ",
+            "snippet": {
+                "title": "PokerStars",
+                "description": "Welcome to the official PokerStars YouTube channel!\n\nHere you’ll find livestreams of our biggest poker tournaments, highlights of the European Poker Tour (EPT), and series like The Big Game and Shark Cage. We also walk you through poker strategy, poker tips, and tutorials on how to play poker on our PokerStars Learn series. And, of course, offer some poker entertainment with epic poker hands and line up the best poker moments on our weekly compilations. \n\n♠️ What to expect on our channel? \n- New videos every week.\n- Tournaments year-round!\n\n18+ Play responsibly.  https://www.gamblingtherapy.org/ \nKeep it cool, Keep it fun, Play Responsibly: https://psta.rs/PlayResponsibly\n\n(MGA/B2C/213/2011)\n",
+                "customUrl": "@pokerstars",
+                "publishedAt": "2006-06-20T03:33:35Z",
+                "thumbnails": {
+                    "default": {
+                        "url": "https://yt3.ggpht.com/ytc/AIdro_nJ2TKfmEP-GAixJ0mpvNzD3DzMryBJGow7P7A6MaNTdV0=s88-c-k-c0x00ffffff-no-rj",
+                        "width": 88,
+                        "height": 88
+                    },
+                    "medium": {
+                        "url": "https://yt3.ggpht.com/ytc/AIdro_nJ2TKfmEP-GAixJ0mpvNzD3DzMryBJGow7P7A6MaNTdV0=s240-c-k-c0x00ffffff-no-rj",
+                        "width": 240,
+                        "height": 240
+                    },
+                    "high": {
+                        "url": "https://yt3.ggpht.com/ytc/AIdro_nJ2TKfmEP-GAixJ0mpvNzD3DzMryBJGow7P7A6MaNTdV0=s800-c-k-c0x00ffffff-no-rj",
+                        "width": 800,
+                        "height": 800
+                    }
+                },
+                "localized": {
+                    "title": "PokerStars",
+                    "description": "Welcome to the official PokerStars YouTube channel!\n\nHere you’ll find livestreams of our biggest poker tournaments, highlights of the European Poker Tour (EPT), and series like The Big Game and Shark Cage. We also walk you through poker strategy, poker tips, and tutorials on how to play poker on our PokerStars Learn series. And, of course, offer some poker entertainment with epic poker hands and line up the best poker moments on our weekly compilations. \n\n♠️ What to expect on our channel? \n- New videos every week.\n- Tournaments year-round!\n\n18+ Play responsibly.  https://www.gamblingtherapy.org/ \nKeep it cool, Keep it fun, Play Responsibly: https://psta.rs/PlayResponsibly\n\n(MGA/B2C/213/2011)\n"
+                },
+                "country": "US"
+            },
+            "contentDetails": {
+                "relatedPlaylists": {
+                    "likes": "",
+                    "uploads": "UUGWkDcYbDKP9r--ym28YwAQ"
+                }
+            },
+            "statistics": {
+                "viewCount": "1545774468",
+                "subscriberCount": "1960000",
+                "hiddenSubscriberCount": false,
+                "videoCount": "4274"
+            }
+        }
+    ]
+}

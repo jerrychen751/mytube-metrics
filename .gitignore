@@ -1,0 +1,8 @@
+# .gitignore
+.env
+venv/
+.venv/
+
+# Cache
+.mypy_cache/
+__pycache__/
