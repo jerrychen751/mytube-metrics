@@ -46,7 +46,7 @@ To get started with the `mytube_metrics` project, you will need to:
         ```
 5.  **Run the application:**
     ```
-    python src/mytube_metrics/main.py
+    python manage.py runserver
     ```
 
 ## Project Structure
@@ -55,46 +55,92 @@ The `mytube_metrics` project is organized as follows:
 
 ```
 /Users/jerry/Desktop/python/projects/mytube_metrics/
-├───src/
-│   └───mytube_metrics/
-│       ├───api/
-│       │   ├───__init__.py
-│       │   └───client.py
-│       ├───static/
-│       │   ├───css/
-│       │   └───js/
-│       ├───templates/
-│       ├───auth.py
-│       ├───database.py
-│       ├───main.py
-│       ├───metric_analyzer.py
-│       └───metric_visualizer.py
-├───venv/ <-- ignore this folder, as it contains a ton of files from libraries
-├───.env <-- ignore this folder as well, since it contains secrets
+├───.DS_Store
 ├───.gitignore
-├───channel_endpoint.py
-├───channel_example.json
-├───diagram.puml
-└───users.sql
+├───GEMINI.md
+├───manage.py
+├───.git/...
+├───.mypy_cache/
+│   └───3.13/...
+├───metrics_app/
+│   ├───__init__.py
+│   ├───admin.py
+│   ├───apps.py
+│   ├───models.py
+│   ├───tests.py
+│   ├───urls.py
+│   ├───views.py
+│   ├───__pycache__/
+│   ├───migrations/
+│   │   ├───__init__.py
+│   │   ├───0001_initial.py
+│   │   ├───0002_alter_usercredential_refresh_token.py
+│   │   └───__pycache__/
+│   ├───services/
+│   │   ├───metric_analyzer.py
+│   │   └───metric_visualizer.py
+│   ├───templates/
+│   │   └───metrics_app/
+│   │       ├───dashboard.html
+│   │       └───login.html
+│   └───utils/
+│       ├───api_client.py
+│       ├───auth_helper.py
+│       ├───database_helper.py
+│       └───__pycache__/
+├───mytube_metrics_project/
+│   ├───__init__.py
+│   ├───asgi.py
+│   ├───settings.py
+│   ├───urls.py
+│   ├───wsgi.py
+│   └───__pycache__/
+├───old/
+│   ├───channel_endpoint.py
+│   ├───channel_example.json
+│   ├───diagram.puml
+│   ├───users.sql
+│   └───src/
+│       ├───.DS_Store
+│       └───mytube_metrics/
+│           ├───auth.py
+│           ├───database.py
+│           ├───main.py
+│           ├───metric_analyzer.py
+│           ├───metric_visualizer.py
+│           ├───static/
+│           │   ├───css/
+│           │   └───js/
+│           ├───templates/
+│           └───youtube_api/
+│               ├───__init__.py
+│               ├───channels.py
+│               ├───client.py
+│               ├───playlists.py
+│               ├───subscriptions.py
+│               └───videos.py
+└───venv/
+    ├───bin/...
+    ├───include/...
+    └───lib/...
 ```
 
--   **`src/mytube_metrics`**: The main application directory.
-    -   **`api`**: Contains the YouTube Data API client.
-        -   **`__init__.py`**: Initializes the `api` package.
-        -   **`client.py`**: A client for interacting with the YouTube Data API.
-    -   **`static`**: Contains static files, such as CSS and JavaScript.
+-   **`metrics_app`**: The main application directory.
+    -   **`services`**: Contains the metric analyzer and visualizer.
+        -   **`metric_analyzer.py`**: Analyzes the user's YouTube data and calculates various metrics.
+        -   **`metric_visualizer.py`**: Creates visualizations of the user's YouTube data.
     -   **`templates`**: Contains HTML templates for the web application.
-    -   **`auth.py`**: Handles user authentication and authorization.
-    -   **`database.py`**: Manages the connection to the MySQL database.
-    -   **`main.py`**: The main entry point for the application.
-    -   **`metric_analyzer.py`**: Analyzes the user's YouTube data and calculates various metrics.
-    -   **`metric_visualizer.py`**: Creates visualizations of the user's YouTube data.
+    -   **`utils`**: Contains helper functions for the application.
+        -   **`api_client.py`**: A client for interacting with the YouTube Data API.
+        -   **`auth_helper.py`**: Handles user authentication and authorization.
+        -   **`database_helper.py`**: Manages the connection to the MySQL database.
+-   **`mytube_metrics_project`**: The project directory.
+    -   **`settings.py`**: Contains the settings for the Django project.
+    -   **`urls.py`**: Contains the URL patterns for the Django project.
+-   **`old`**: Contains the old source code.
 -   **`.env`**: Contains environment variables for the project.
 -   **`.gitignore`**: Specifies which files and directories to ignore in Git.
--   **`channel_endpoint.py`**: A script for testing the YouTube Data API's `channels` endpoint.
--   **`channel_example.json`**: An example of the JSON response from the `channels` endpoint.
--   **`diagram.puml`**: A PlantUML diagram of the project's architecture.
--   **`users.sql`**: A SQL script for creating the `users` table in the database.
+-   **`manage.py`**: A command-line utility for interacting with the Django project.
 
 ## User-Centric Functionalities
 

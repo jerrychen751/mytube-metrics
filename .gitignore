@@ -2,6 +2,7 @@
 .env
 venv/
 .venv/
+old/
 
 # Cache
 .mypy_cache/
