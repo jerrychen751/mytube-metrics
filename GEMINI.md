@@ -88,7 +88,7 @@ The `mytube_metrics` project is organized as follows:
 │       ├───auth_helper.py
 │       ├───database_helper.py
 │       └───__pycache__/
-├───mytube_metrics_project/
+├───mytube_metrics/
 │   ├───__init__.py
 │   ├───asgi.py
 │   ├───settings.py
@@ -125,7 +125,7 @@ The `mytube_metrics` project is organized as follows:
     └───lib/...
 ```
 
--   **`metrics_app`**: The main application directory.
+-   **`metrics`**: The main application directory.
     -   **`services`**: Contains the metric analyzer and visualizer.
         -   **`metric_analyzer.py`**: Analyzes the user's YouTube data and calculates various metrics.
         -   **`metric_visualizer.py`**: Creates visualizations of the user's YouTube data.
@@ -134,7 +134,7 @@ The `mytube_metrics` project is organized as follows:
         -   **`api_client.py`**: A client for interacting with the YouTube Data API.
         -   **`auth_helper.py`**: Handles user authentication and authorization.
         -   **`database_helper.py`**: Manages the connection to the MySQL database.
--   **`mytube_metrics_project`**: The project directory.
+-   **`mytube_metrics`**: The project directory.
     -   **`settings.py`**: Contains the settings for the Django project.
     -   **`urls.py`**: Contains the URL patterns for the Django project.
 -   **`old`**: Contains the old source code.

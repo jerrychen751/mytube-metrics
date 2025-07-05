@@ -67,9 +67,9 @@ class OAuth:
 
         return authorization_url, state
 
-    def fetch_and_store_credentials(self, state: str, authorization_response: str, user_id: int | None = None) -> Credentials:
+    def fetch_credentials(self, state: str, authorization_response: str) -> Credentials:
         """
-        Take the redirect URL back to application returned by Google (authorization_response) and obtain/return credentials by extracting the authorization code within the URL and making a secure request to the token endpoint.
+        Takes the redirect URL returned by Google (authorization_response) and returns credentials by extracting the authorization code within the URL and making a secure request to the token endpoint.
 
         Also saves both access and refresh tokens to MySQL database for user.
         """
@@ -80,36 +80,7 @@ class OAuth:
             state=state,
             redirect_uri=self.active_redirect_uri
         )
-        flow.fetch_token(authorization_response=authorization_response)
+        flow.fetch_token(authorization_response=authorization_response) # checks the state in authorization_response after auth to the argument passed (state from get_authorization_url)
+        
         credentials = flow.credentials
-
-        database.save_user_credentials(credentials, user_id)
         return credentials
-
-        # creds = None
-        # if os.path.exists(self.TOKEN_PICKLE): # here, check the database for stored credentials
-        #     with open(self.TOKEN_PICKLE, "rb") as token_file:
-        #         creds = pickle.load(token_file)
-
-        # if not creds or not creds.valid: # either first time sign-in or creds invalid
-        #     if creds and creds.expired and creds.refresh_token: # try to use refresh token
-        #         try:
-        #             creds.refresh(Request())
-        #         except Exception as e:
-        #             print(f"Error refreshing token: {e}")
-        #             creds = None # force reauthentication
-
-        #     if not creds: # use the full flow
-        #         try:
-        #             client_config = self.build_client_config()
-        #             flow = InstalledAppFlow.from_client_config(client_config, self.SCOPES)
-        #             creds = flow.run_local_server(port=0)
-        #         except Exception as e:
-        #             print(f"An unexpected error occurred: {e}")
-        #             return None
-
-        # with open(self.TOKEN_PICKLE, "wb") as token_file:
-        #     pickle.dump(creds, token_file)
-
-        # return creds
-

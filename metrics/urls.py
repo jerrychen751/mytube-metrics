@@ -7,3 +7,5 @@ urlpatterns = [
     path('dashboard/', views.dashboard, name='dashboard'),
     path('logout/', views.user_logout, name='logout'),
 ]
+
+# use `name` argument to avoid hardcoding (change URL path w/o changing references throughout code)
