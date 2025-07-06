@@ -1,0 +1,30 @@
+{% extends "metrics/base.html" %}
+
+{% block title %}My Subscriptions - MyTube Metrics{% endblock %}
+
+{% block content %}
+  <div class="container">
+    <h1 class="mb-4">My Subscriptions ({{ subscriptions|length }})</h1>
+
+    {% if subscriptions %}
+      <div class="list-group">
+        {% for sub in subscriptions %}
+          <a href="https://www.youtube.com/channel/{{ sub.snippet.resourceId.channelId }}" target="_blank" rel="noopener noreferrer" class="list-group-item list-group-item-action d-flex align-items-center mb-3 shadow-sm">
+            <img src="{{ sub.snippet.thumbnails.default.url }}" alt="{{ sub.snippet.title }} thumbnail" class="rounded-circle me-4" width="60" height="60">
+            <div class="flex-grow-1">
+              <h5 class="mb-1">{{ sub.snippet.title }}</h5>
+              <p class="mb-1 text-muted">{{ sub.snippet.description|truncatechars:150 }}</p>
+              <small>Total videos: {{ sub.contentDetails.totalItemCount }} | New videos since last check: {{ sub.contentDetails.newItemCount }}</small>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="alert alert-info" role="alert">
+        Could not find any subscriptions or there was an error fetching them.
+      </div>
+    {% endif %}
+
+    <a href="{% url 'dashboard' %}" class="btn btn-secondary mt-4">Back to Dashboard</a>
+  </div>
+{% endblock %}

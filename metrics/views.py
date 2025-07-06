@@ -3,6 +3,9 @@ from django.contrib.auth.decorators import login_required
 
 from .utils.auth_helper import OAuth
 from .models import UserCredential
+from .utils.api_client import YouTubeClient
+
+# --- Initial Login Page ---
 
 def google_login(request):
     # Check if user is already logged in
@@ -25,7 +28,7 @@ def google_login(request):
     # Typical scenario (user navigates to login page via a GET request)
     return render(request, 'metrics/login.html')
 
-# ---------------------------------------
+# --- OAuth Flow (callback/) ---
 
 from django.contrib.auth import login
 from django.contrib.auth.models import User
@@ -71,16 +74,32 @@ def google_callback(request):
     next_url = request.session.pop('next', 'dashboard')
     return redirect(next_url)
 
-# ---------------------------------------
+# --- Dashboard Home Page (dashboard/) ---
 
-# decorator that page requires authentication;
-# automatically adds `next` query parameter
-# sends user to LOGIN_URL in proj settings.py
-@login_required
+@login_required # sends user to LOGIN_URL in settings.py if not already logged in
 def dashboard(request):
     return render(request, 'metrics/dashboard.html')
 
-# ---------------------------------------
+# --- Subscription Insights (subscriptions/) ---
+@login_required
+def subscriptions_list(request):
+    user_credentials = request.user.usercredential
+
+    client = YouTubeClient(credentials=user_credentials)
+
+    subscriptions_response = client.subscriptions.list(part='snippet,contentDetails', mine=True, max_results=50)
+
+    subscription_items = []
+    if subscriptions_response and 'items' in subscriptions_response:
+        subscription_items = subscriptions_response['items']
+
+    context = {
+        'subscriptions': subscription_items,
+    }
+
+    return render(request, 'metrics/subscriptions_list.html', context)
+
+# --- Logout Page (logout/) ---
 
 from django.contrib.auth import logout
 

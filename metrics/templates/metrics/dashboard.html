@@ -1,35 +1,39 @@
-<style>
-    .profile-container {
-        position: absolute;
-        top: 15px;
-        right: 15px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-    .profile-picture {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-    }
-    .logout-link {
-        display: block;
-        margin-top: 5px;
-        font-size: 16px;
-    }
-</style>
+{% extends "metrics/base.html" %}
 
-<h1>Welcome to your MyTube Metrics Dashboard, {{user.first_name}}!</h1>
+{% block title %}Dashboard - MyTube Metrics{% endblock %}
 
-{% if user.usercredential.profile_picture_url %}
-    <div class="profile-container">
-        <img src="{{ user.usercredential.profile_picture_url }}" alt="Profile Picture" class="profile-picture">
-        <a href="{% url 'logout' %}" class="logout-link">Logout</a>
+{% block content %}
+  <div class="container">
+    <h1 class="mb-4">Dashboard</h1>
+    
+    <div class="row">
+      {# Subscription Insights Card #}
+      <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100">
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title">Subscription Insights</h5>
+            <p class="card-text">View and analyze the channels you are subscribed to. See which channels are most active and discover trends in your subscriptions.</p>
+            <div class="mt-auto">
+              <a href="{% url 'subscriptions_list' %}" class="btn btn-primary">See My Subscriptions</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {# Add other cards here in the future #}
+      {# Example of a placeholder card #}
+      <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100 text-muted bg-light">
+          <div class="card-body d-flex flex-column">
+            <h5 class="card-title">Playlist Analysis</h5>
+            <p class="card-text">Analyze your liked videos and other playlists to find common topics and themes.</p>
+            <div class="mt-auto">
+              <a href="#" class="btn btn-secondary disabled">Coming Soon</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
     </div>
-{% else %}
-    <p><a href="{% url 'logout' %}">Logout</a></p>
-{% endif %}
-
-<p>You are logged in as {{ user.username }}.</p>
-
-
+  </div>
+{% endblock %}

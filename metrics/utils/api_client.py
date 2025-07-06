@@ -4,6 +4,8 @@ from dotenv import load_dotenv
 from google.oauth2.credentials import Credentials
 from .api_resources import Channels, Playlists, Subscriptions, Videos
 
+from typing import Any
+
 class YouTubeClient:
     """
     A client for interacting with the YouTube Data API v3 using the `requests` library. Manages authentication and raw API requests.
@@ -34,12 +36,12 @@ class YouTubeClient:
         self.session = requests.Session()
             
         # --- Initialize Resource Handlers ---
-        self.channels = Channels(self)
-        self.playlists = Playlists(self)
+        # self.channels = Channels(self)
+        # self.playlists = Playlists(self)
         self.subscriptions = Subscriptions(self)
-        self.videos = Videos(self)
+        # self.videos = Videos(self)
         
-    def _make_request(self, endpoint_path: str, params: dict[str, str], is_oauth: bool = False) -> dict | None:
+    def _make_request(self, endpoint_path: str, params: dict[str, str], use_oauth: bool = False) -> dict[str, Any] | None:
         """
         Make a request to a specific YouTube Data API endpoint.
         
@@ -56,11 +58,11 @@ class YouTubeClient:
         request_params = params.copy() # avoid modifying original dictionary; shallow copy is fine b/c all values in dictionary are immutable
 
         # Add necessary parameters to GET request
-        if is_oauth:
+        if use_oauth:
             if not self.credentials or not self.credentials.token:
                 raise ValueError("Cannot make OAuth request without valid credentials.")
             
-            headers["Authorization": f"Bearer {self.credentials.token}"]
+            headers["Authorization"] = f"Bearer {self.credentials.token}"
         else:
             if not self.api_key:
                 raise ValueError("Cannot make public request without an API key.")
