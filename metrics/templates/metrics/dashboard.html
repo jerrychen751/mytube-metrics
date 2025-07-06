@@ -1,4 +1,35 @@
+<style>
+    .profile-container {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .profile-picture {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+    }
+    .logout-link {
+        display: block;
+        margin-top: 5px;
+        font-size: 16px;
+    }
+</style>
+
 <h1>Welcome to your MyTube Metrics Dashboard, {{user.first_name}}!</h1>
+
+{% if user.usercredential.profile_picture_url %}
+    <div class="profile-container">
+        <img src="{{ user.usercredential.profile_picture_url }}" alt="Profile Picture" class="profile-picture">
+        <a href="{% url 'logout' %}" class="logout-link">Logout</a>
+    </div>
+{% else %}
+    <p><a href="{% url 'logout' %}">Logout</a></p>
+{% endif %}
+
 <p>You are logged in as {{ user.username }}.</p>
-<p><a href="{% url 'logout' %}">Logout</a></p>
+
 

@@ -1,0 +1,2 @@
+class Subscriptions:
+    pass

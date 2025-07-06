@@ -4,8 +4,6 @@ from dotenv import load_dotenv
 from google_auth_oauthlib.flow import Flow
 from google.oauth2.credentials import Credentials
 
-from . import database_helper as database
-
 class OAuth:
     def __init__(self) -> None:
         os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
@@ -81,6 +79,6 @@ class OAuth:
             redirect_uri=self.active_redirect_uri
         )
         flow.fetch_token(authorization_response=authorization_response) # checks the state in authorization_response after auth to the argument passed (state from get_authorization_url)
-        
+
         credentials = flow.credentials
         return credentials

@@ -1,12 +1,8 @@
 import os
 import requests
 from dotenv import load_dotenv
-
-from google_auth_oauthlib.flow import InstalledAppFlow
-from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
-
-from typing import Generator
+from .api_resources import Channels, Playlists, Subscriptions, Videos
 
 class YouTubeClient:
     """
@@ -14,7 +10,7 @@ class YouTubeClient:
     """
     BASE_URL = "https://www.googleapis.com/youtube/v3"
 
-    def __init__(self, api_key: str, credentials: Credentials | None = None) -> None:
+    def __init__(self, credentials: Credentials | None = None) -> None:
         """
         Initializes the YouTubeClient for handling API requests.
 
@@ -26,56 +22,62 @@ class YouTubeClient:
         as this is essential for making authorized API calls.
 
         Args:
-            api_key (str, optional): The API key for accessing public YouTube data.
-                                     Defaults to None.
-            credentials (Credentials, optional): An OAuth 2.0 credentials object from the
-                                                 `google.oauth2.credentials` module.
-                                                 Required for accessing private user data.
-                                                 Defaults to None.
+            credentials (Credentials, optional): Required for accessing private user data. Defaults to None.
 
         Raises:
             ValueError: If neither `api_key` nor `credentials` are provided.
         """
-        if not api_key:
-            raise ValueError("API key is required")
+        # --- Initialize API Key / Credentials ---
+        load_dotenv()
+        self.api_key = os.getenv("API_KEY")
+        self.credentials = credentials
+        self.session = requests.Session()
+            
+        # --- Initialize Resource Handlers ---
+        self.channels = Channels(self)
+        self.playlists = Playlists(self)
+        self.subscriptions = Subscriptions(self)
+        self.videos = Videos(self)
         
-        self.api_key = api_key
-        if credentials:
-            self.auth_mode = "oauth"
-            self.credentials = credentials
-        
-    def make_api_request(self, endpoint_path: str, params: dict[str, str]) -> dict | None:
+    def _make_request(self, endpoint_path: str, params: dict[str, str], is_oauth: bool = False) -> dict | None:
         """
         Make a request to a specific YouTube Data API endpoint.
         
         Args:
             endpoint_path (str): Path to the API endpoint.
             params (dict): A dictionary of parameters for API call.
+            is_oauth (bool): If True, uses the OAuth token. If False, uses the API key.
 
         Returns:
             The JSON response from the API as a dictionary, or None if an error occurs.
         """
-        headers = {"Accept": "application/json"}
-        
-        if self.auth_mode == "oauth":
-            headers["Authorization": f"Bearer {self.credentials.token}"]
-
         url = f"{os.getenv("BASE_URL")}/{endpoint_path}"
+        headers = {"Accept": "application/json"}
+        request_params = params.copy() # avoid modifying original dictionary; shallow copy is fine b/c all values in dictionary are immutable
 
-        if headers is None or "Authorization" not in headers:
-            params["key"] = self.api_key
+        # Add necessary parameters to GET request
+        if is_oauth:
+            if not self.credentials or not self.credentials.token:
+                raise ValueError("Cannot make OAuth request without valid credentials.")
+            
+            headers["Authorization": f"Bearer {self.credentials.token}"]
+        else:
+            if not self.api_key:
+                raise ValueError("Cannot make public request without an API key.")
 
+            request_params["key"] = self.api_key
+
+        # Make GET request
         try:
-            response = requests.get(url=url, headers=headers, params=params)
+            response = self.session.get(url=url, headers=headers, params=request_params)
             response.raise_for_status() # raise error early if 4xx or 5xx response code
             return response.json()
-
         except requests.exceptions.RequestException as e:
             print(f"An API reqest error occurred: {e}")
             return None
     
     # --- TASK FUNCTIONS ---
-    def stream_user_activities(self, access_token: str, pages: int = 1) -> Generator:
+    def stream_user_activities(self, access_token: str, pages: int = 1):
         """
         Acts as a generator to stream the authenticated user's activities, using an OAuth 2.0 access token.
 
@@ -105,7 +107,7 @@ class YouTubeClient:
                 params["pageToken"] = next_page_token
 
             try:
-                data = self.make_api_request("activities", params, headers)
+                data = self._make_request("activities", params, headers)
                 if "items" in data:
                     for item in data["items"]:
                         yield item

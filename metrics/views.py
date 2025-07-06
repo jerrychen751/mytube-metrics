@@ -65,6 +65,7 @@ def google_callback(request):
     user_credential.access_token = credentials.token
     if credentials.refresh_token:
         user_credential.refresh_token = credentials.refresh_token
+    user_credential.profile_picture_url = user_info.get('picture', '')
     user_credential.save() # commit changes to database
 
     next_url = request.session.pop('next', 'dashboard')
