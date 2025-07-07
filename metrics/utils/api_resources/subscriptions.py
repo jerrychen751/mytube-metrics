@@ -53,7 +53,7 @@ class Subscriptions:
             order (str): The order in which to retrieve the subscriptions. Accepts 'alphabetical', 'relevance', or 'unread'.
 
         Yields:
-            Dict[str, Any]: A dictionary representing a single subscription item.
+            Dict[str, Any]: A dictionary representing a single subscription item. None if there is an error during listing.
         """
         next_page_token: Optional[str] = None
         while True:

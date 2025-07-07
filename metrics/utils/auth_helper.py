@@ -67,8 +67,6 @@ class OAuth:
     def fetch_credentials(self, state: str, authorization_response: str) -> Credentials:
         """
         Takes the redirect URL returned by Google (authorization_response) and returns credentials by extracting the authorization code within the URL and making a secure request to the token endpoint.
-
-        Also saves both access and refresh tokens to MySQL database for user.
         """
         client_config = self.build_client_config()
         flow = Flow.from_client_config(

@@ -40,7 +40,7 @@ def google_callback(request):
     oauth = OAuth()
     authorization_response = request.build_absolute_uri()
     credentials = oauth.fetch_credentials(state, authorization_response)
-
+    
     # Use the credentials to get user info
     user_info_response = requests.get(
         'https://www.googleapis.com/oauth2/v3/userinfo',
@@ -85,6 +85,8 @@ def subscriptions_list(request):
     
     page_num = int(request.GET.get('page', 1))
     subscription_generator = client.subscriptions.list_all_user_subscriptions()
+    if not subscription_generator:
+        print("none")
 
     # Get the paginated data from the analyzer
     from .services.subscription_analyzer import get_paginated_subscriptions

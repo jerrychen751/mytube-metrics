@@ -15,8 +15,14 @@
             </a>
             <div class="flex-grow-1">
                 <h5 class="mb-1">{{ sub.channel_title }}</h5>
-                <small>Total videos: {{ sub.total_item_count }} | New videos: <strong>{{ sub.new_item_count }}</strong></small>
+                <small class="text-muted">
+                    Total videos: {{ sub.total_item_count }}
+                    {% if sub.new_item_count > 0 %}
+                        | <span style="width: 8px; height: 8px; display: inline-block; margin-right: 2px;" class="bg-danger border border-light rounded-circle"></span> New Video(s) Available
+                    {% endif %}
+                </small>
             </div>
+
             <div class="position-absolute bottom-0 end-0 p-2">
                 {% if sub.published_at %}
                 <small class="text-muted">Subscribed: {{ sub.published_at|date:"m/d/Y" }}</small>
@@ -27,7 +33,7 @@
     </div>
     {% else %}
     <div class="alert alert-info" role="alert">
-        Could not find any subscriptions or there was an error fetching them.
+        Could not find any subscriptions or there was an error fetching them. Try logging in again.
     </div>
     {% endif %}
 
