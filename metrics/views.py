@@ -6,7 +6,6 @@ from .models import UserCredential
 from .utils.api_client import YouTubeClient
 
 # --- Initial Login Page ---
-
 def google_login(request):
     # Check if user is already logged in
     if request.user.is_authenticated:
@@ -29,7 +28,6 @@ def google_login(request):
     return render(request, 'metrics/login.html')
 
 # --- OAuth Flow (callback/) ---
-
 from django.contrib.auth import login
 from django.contrib.auth.models import User
 import requests
@@ -75,7 +73,6 @@ def google_callback(request):
     return redirect(next_url)
 
 # --- Dashboard Home Page (dashboard/) ---
-
 @login_required # sends user to LOGIN_URL in settings.py if not already logged in
 def dashboard(request):
     return render(request, 'metrics/dashboard.html')
@@ -84,23 +81,21 @@ def dashboard(request):
 @login_required
 def subscriptions_list(request):
     user_credentials = request.user.usercredential
-
     client = YouTubeClient(credentials=user_credentials)
+    
+    page_num = int(request.GET.get('page', 1))
+    subscription_generator = client.subscriptions.list_all_user_subscriptions()
 
-    subscriptions_response = client.subscriptions.list(part='snippet,contentDetails', mine=True, max_results=50)
+    # Get the paginated data from the analyzer
+    from .services.subscription_analyzer import get_paginated_subscriptions
+    pagination_data = get_paginated_subscriptions(
+        subscription_generator, 
+        page_num=page_num,
+    )
 
-    subscription_items = []
-    if subscriptions_response and 'items' in subscriptions_response:
-        subscription_items = subscriptions_response['items']
-
-    context = {
-        'subscriptions': subscription_items,
-    }
-
-    return render(request, 'metrics/subscriptions_list.html', context)
+    return render(request, 'metrics/subscriptions_list.html', pagination_data)
 
 # --- Logout Page (logout/) ---
-
 from django.contrib.auth import logout
 
 def user_logout(request):

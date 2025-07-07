@@ -1,19 +1,64 @@
-import os
-import json
-import pickle
-import requests
-from dotenv import load_dotenv
+from typing import Generator, Dict, Any, List, Tuple
+from datetime import datetime
 
-from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
-from google_auth_oauthlib.flow import InstalledAppFlow
-from google.auth.transport.requests import Request
-from google.oauth2.credentials import Credentials
+def get_paginated_subscriptions(
+    subscription_generator: Generator[Dict[str, Any], None, None], 
+    page_num: int = 1, 
+    items_per_page: int = 25
+) -> Dict[str, Any]:
+    """
+    Consumes a generator of raw subscription data and processes it into a paginated list of dictionaries formatted for the template.
 
-from ..utils.api_client import YouTubeClient
-from ..utils.auth_helper import OAuth
+    Args:
+        subscription_generator: The generator yielding raw subscription items from the API.
+        page_number: The page number to retrieve (1-indexed).
+        items_per_page: The number of items to display per page.
 
-class MetricAnalyzer:
-    pass
+    Returns:
+        A dictionary containing the list of processed subscriptions for the current page and pagination context.
+    """
+    start_idx = (page_num - 1) * items_per_page
+    end_idx = start_idx + items_per_page
+    
+    processed_subs = []
+    has_next_page = False
+    
+    # Iterate through the generator with an index
+    for i, sub in enumerate(subscription_generator):
+        # Stop by page/inde
+        if i >= end_idx:
+            has_next_page = True
+            break
 
-    # if it's private, within query parameters mine=True & access_token=OAUTH
+        # If curr idx is in the range of the current page, process the item
+        if i >= start_idx:
+            snippet = sub.get('snippet', {})
+            content_details = sub.get('contentDetails', {})
+
+            # Safely parse the date string
+            published_at_str = snippet.get('publishedAt')
+            published_at_obj = None
+            if published_at_str:
+                try:
+                    published_at_obj = datetime.fromisoformat(published_at_str.replace('Z', '+00:00'))
+                except ValueError:
+                    published_at_obj = None
+
+            # Build processed subscription dictionary
+            processed_sub = {
+                'channel_title': snippet.get('title', 'N/A'),
+                'profile_picture_url': snippet.get('thumbnails', {}).get('default', {}).get('url'),
+                'published_at': published_at_obj,
+                'total_item_count': content_details.get('totalItemCount', 0),
+                'new_item_count': content_details.get('newItemCount', 0),
+                'channel_id': snippet.get('resourceId', {}).get('channelId')
+            }
+            processed_subs.append(processed_sub)
+
+    return {
+        'subscriptions': processed_subs,
+        'has_next_page': has_next_page,
+        'next_page_number': page_num + 1,
+        'previous_page_number': page_num - 1,
+        'has_previous_page': page_num > 1
+    }

@@ -4,7 +4,7 @@
 
 {% block content %}
   <div class="container">
-    <h1 class="mb-4">Dashboard</h1>
+    <h1 class="mb-4 text-center">Welcome to your dashboard, {% if user.first_name %}{{ user.first_name }}!{% endif %}</h1>
     
     <div class="row">
       {# Subscription Insights Card #}

@@ -2,6 +2,9 @@ import os
 import requests
 from dotenv import load_dotenv
 from google.oauth2.credentials import Credentials
+from google.auth.transport.requests import Request
+
+from metrics.models import UserCredential
 from .api_resources import Channels, Playlists, Subscriptions, Videos
 
 from typing import Any
@@ -12,7 +15,7 @@ class YouTubeClient:
     """
     BASE_URL = "https://www.googleapis.com/youtube/v3"
 
-    def __init__(self, credentials: Credentials | None = None) -> None:
+    def __init__(self, credentials: UserCredential | None = None) -> None:
         """
         Initializes the YouTubeClient for handling API requests.
 
@@ -32,7 +35,14 @@ class YouTubeClient:
         # --- Initialize API Key / Credentials ---
         load_dotenv()
         self.api_key = os.getenv("API_KEY")
-        self.credentials = credentials
+        self.credentials = Credentials(
+            token=credentials.access_token,
+            refresh_token=credentials.refresh_token,
+            token_uri=os.getenv("TOKEN_URI"),
+            client_id=os.getenv("CLIENT_ID"),
+            client_secret=os.getenv("CLIENT_SECRET"),
+            scopes=os.getenv("SCOPES", "").split(',')
+        )
         self.session = requests.Session()
             
         # --- Initialize Resource Handlers ---
@@ -53,14 +63,23 @@ class YouTubeClient:
         Returns:
             The JSON response from the API as a dictionary, or None if an error occurs.
         """
-        url = f"{os.getenv("BASE_URL")}/{endpoint_path}"
+        url = f"{self.BASE_URL}/{endpoint_path}"
         headers = {"Accept": "application/json"}
         request_params = params.copy() # avoid modifying original dictionary; shallow copy is fine b/c all values in dictionary are immutable
 
         # Add necessary parameters to GET request
         if use_oauth:
+            # Safety check
             if not self.credentials or not self.credentials.token:
                 raise ValueError("Cannot make OAuth request without valid credentials.")
+            
+            # Attempt token refresh if access token is expired
+            if self.credentials.expired and self.credentials.refresh_token:
+                try:
+                    self.credentials.refresh(Request())
+                except Exception as e:
+                    print(f"Failed to refresh token: {e}")
+                    return None
             
             headers["Authorization"] = f"Bearer {self.credentials.token}"
         else:
@@ -72,55 +91,15 @@ class YouTubeClient:
         # Make GET request
         try:
             response = self.session.get(url=url, headers=headers, params=request_params)
+            if response.status_code >= 400:
+                print(f"--- YouTube API Error ---")
+                print(f"URL: {response.url}")
+                print(f"Status Code: {response.status_code}")
+                print(f"Response: {response.text}")
+                print(f"--------------------------")
             response.raise_for_status() # raise error early if 4xx or 5xx response code
             return response.json()
         except requests.exceptions.RequestException as e:
             print(f"An API reqest error occurred: {e}")
             return None
     
-    # --- TASK FUNCTIONS ---
-    def stream_user_activities(self, access_token: str, pages: int = 1):
-        """
-        Acts as a generator to stream the authenticated user's activities, using an OAuth 2.0 access token.
-
-        Args:
-            access_token (str): OAuth 2.0 access token.
-            pages (int): The number of pages to stream (maxResults=50 per page).
-
-        Returns:
-            A dictionary/JSON form of the activity resource.
-        """
-        if not access_token:
-            print("No access token.")
-            return
-
-        params = {
-            "part": "id,snippet,contentDetails",
-            "mine": "true",
-            "maxResults": 50,
-        }
-        headers={
-            "Authorization": f"Bearer {access_token}"
-        }
-
-        next_page_token = None
-        for _ in range(pages):
-            if next_page_token:
-                params["pageToken"] = next_page_token
-
-            try:
-                data = self._make_request("activities", params, headers)
-                if "items" in data:
-                    for item in data["items"]:
-                        yield item
-
-                next_page_token = data.get("nextPageToken") # pagination
-                if not next_page_token:
-                    break
-            except requests.exceptions.HTTPError as e:
-                print(f"An HTTP error occurred: {e}")
-                print(f"Response content: {e.response.text}")
-                break
-            except Exception as e:
-                print(f"An unexpected error occurred: {e}")
-                break

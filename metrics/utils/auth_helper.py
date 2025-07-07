@@ -11,7 +11,6 @@ class OAuth:
         self.scopes = os.getenv("SCOPES", "").split(',')
         self.active_redirect_uri = os.getenv("REDIRECT_URI")
 
-    # --- OAUTH2 FLOW ---
     def build_client_config(self) -> dict[str, dict[str, str]]:
         """
         Read OAuth 2.0 client parameters from environment variables and builds the Google client_config dict for InstalledAppFlow.
@@ -82,3 +81,5 @@ class OAuth:
 
         credentials = flow.credentials
         return credentials
+
+    

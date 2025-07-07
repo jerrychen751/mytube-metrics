@@ -17,7 +17,12 @@
   <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
       <div class="container-fluid px-3">
-        <a class="navbar-brand" href="{% url 'dashboard' %}">MyTube Metrics</a>
+        <div class="d-flex align-items-center">
+          {% if user.is_authenticated and user.usercredential.profile_picture_url %}
+            <img src="{{ user.usercredential.profile_picture_url }}" alt="Profile Picture" class="rounded-circle me-2" width="30" height="30" style="vertical-align: middle;">
+          {% endif %}
+          <a class="navbar-brand" href="{% url 'dashboard' %}">MyTube Metrics</a>
+        </div>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
           <span class="navbar-toggler-icon"></span>
         </button>
@@ -29,7 +34,7 @@
               </li>
             {% else %}
               <li class="nav-item">
-                <a class="nav-link" href="#">Login</a>
+                <a class="nav-link" href="{% url 'login' %}">Login</a>
               </li>
             {% endif %}
           </ul>

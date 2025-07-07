@@ -43,9 +43,9 @@ class Subscriptions:
         return self._client._make_request("subscriptions", params=params, use_oauth=use_oauth)
 
     def list_all_user_subscriptions(self, part: str = "id,snippet,contentDetails", 
-                                    order: str = "alphabetical") -> Generator[Dict[str, Any], None, None]:
+                                    order: str = "alphabetical") -> Generator[Dict[str,Any], None, None]:
         """
-        Generator to list all of the authenticated user's subscriptions, handling pagination.
+        Generator to list all of the authenticated user's subscription data.
 
         Args:
             part (str): Comma-separated list of one or more subscription resource properties.
