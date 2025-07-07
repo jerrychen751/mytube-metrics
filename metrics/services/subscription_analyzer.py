@@ -1,3 +1,5 @@
+from metrics.utils.date_helper import iso_to_datetime
+
 from typing import Generator, Dict, Any, List, Tuple
 from datetime import datetime
 
@@ -23,7 +25,7 @@ def get_paginated_subscriptions(
     processed_subs = []
     has_next_page = False
     
-    # Iterate through the generator with an index
+    # Iterate through the generator with an index to track page progress
     for i, sub in enumerate(subscription_generator):
         # Stop by page/inde
         if i >= end_idx:
@@ -35,20 +37,11 @@ def get_paginated_subscriptions(
             snippet = sub.get('snippet', {})
             content_details = sub.get('contentDetails', {})
 
-            # Safely parse the date string
-            published_at_str = snippet.get('publishedAt')
-            published_at_obj = None
-            if published_at_str:
-                try:
-                    published_at_obj = datetime.fromisoformat(published_at_str.replace('Z', '+00:00'))
-                except ValueError:
-                    published_at_obj = None
-
             # Build processed subscription dictionary
             processed_sub = {
                 'channel_title': snippet.get('title', 'N/A'),
                 'profile_picture_url': snippet.get('thumbnails', {}).get('default', {}).get('url'),
-                'published_at': published_at_obj,
+                'published_at': iso_to_datetime(snippet.get('publishedAt', None)),
                 'total_item_count': content_details.get('totalItemCount', 0),
                 'new_item_count': content_details.get('newItemCount', 0),
                 'channel_id': snippet.get('resourceId', {}).get('channelId')

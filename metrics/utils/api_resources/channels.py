@@ -1,2 +1,7 @@
+from typing import Any
+
 class Channels:
-    pass
+    def __init__(self, client: Any) -> None:
+        self._client = client
+
+    # def list()
