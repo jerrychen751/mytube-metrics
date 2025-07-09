@@ -38,6 +38,7 @@ class Subscriptions:
             use_oauth = True
         elif channel_id:
             params["channelId"] = channel_id
+            use_oauth = False
         else:
             raise ValueError("Either 'mine=True' or 'channel_id' must be provided.")
 

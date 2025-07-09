@@ -93,17 +93,16 @@ def subscriptions_list(request):
         page_num=page_num,
     )
 
-    # pagination_data.get('subscriptions') -> list of dictionaries (each dict representing a channel)
-    # Insert into each dictionary within that list a few additional pieces of information
-
-    from .services.channel_analyzer import 
-    # Get additional statistics on subscribed channels
-    subs_on_page = pagination_data.get('subscriptions', [])
+    # Get additional statistics on current page of subscriptions (25 max)
+    subs_on_page = pagination_data.get('subscriptions', {}) # dictionaries mapping channel ids to channel data
     if subs_on_page:
-        channel_ids = [sub['channel_id'] for sub in subs_on_page]
+        channel_ids = [channel_id for channel_id in subs_on_page]
         raw_channel_stats = client.channels.list(channel_ids=",".join(channel_ids))
+        processed_channel_stats = client.channels.process_raw_stats(raw_channel_stats)
 
-        
+        for channel_id, channel_data in subs_on_page.items():
+            if channel_id in processed_channel_stats:
+                channel_data.update(processed_channel_stats[channel_id])
 
     return render(request, 'metrics/subscriptions_list.html', pagination_data)
 
