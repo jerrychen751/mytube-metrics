@@ -1,5 +1,5 @@
 from datetime import datetime
-def iso_to_datetime(published_at_str: str | None) -> datetime | None:
+def isostr_to_datetime(published_at_str: str | None) -> datetime | None:
     """
     Convert publishedAt datetime ISO 8601 formatted string to datetime object.
 

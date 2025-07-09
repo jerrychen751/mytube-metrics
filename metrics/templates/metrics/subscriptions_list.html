@@ -9,24 +9,33 @@
     {% if subscriptions %}
     <div class="list-group">
         {% for sub in subscriptions %}
-        <div class="list-group-item d-flex align-items-center mb-3 shadow-sm position-relative">
-            <a href="https://www.youtube.com/channel/{{ sub.channel_id }}" target="_blank" rel="noopener noreferrer">
-                <img src="{{ sub.profile_picture_url }}" alt="{{ sub.channel_title }} thumbnail" class="rounded-circle me-4" width="60" height="60">
-            </a>
-            <div class="flex-grow-1">
-                <h5 class="mb-1">{{ sub.channel_title }}</h5>
-                <small class="text-muted">
-                    Total videos: {{ sub.total_item_count }}
-                    {% if sub.new_item_count > 0 %}
-                        | <span style="width: 8px; height: 8px; display: inline-block; margin-right: 2px;" class="bg-danger border border-light rounded-circle"></span> New Video(s) Available
+        <div class="list-group-item mb-3 shadow-sm position-relative">
+            <div class="d-flex align-items-center" data-bs-toggle="collapse" href="#sub-details-{{ forloop.counter }}" role="button" aria-expanded="false" aria-controls="sub-details-{{ forloop.counter }}">
+                <a href="https://www.youtube.com/channel/{{ sub.channel_id }}" target="_blank" rel="noopener noreferrer">
+                    <img src="{{ sub.profile_picture_url }}" alt="{{ sub.channel_title }} thumbnail" class="rounded-circle me-4" width="60" height="60">
+                </a>
+                <div class="flex-grow-1">
+                    <h5 class="mb-1">{{ sub.channel_title }}</h5>
+                    <small class="text-muted">
+                        Total videos: {{ sub.total_item_count }}
+                        {% if sub.new_item_count > 0 %}
+                            | <span style="width: 8px; height: 8px; display: inline-block; margin-right: 2px;" class="bg-danger border border-light rounded-circle"></span> New Video(s) Available
+                        {% endif %}
+                    </small>
+                </div>
+                <div class="position-absolute bottom-0 end-0 p-2">
+                    {% if sub.published_at %}
+                    <small class="text-muted">Subscribed: {{ sub.published_at|date:"m/d/Y" }}</small>
                     {% endif %}
-                </small>
+                </div>
             </div>
-
-            <div class="position-absolute bottom-0 end-0 p-2">
-                {% if sub.published_at %}
-                <small class="text-muted">Subscribed: {{ sub.published_at|date:"m/d/Y" }}</small>
-                {% endif %}
+            <div class="collapse mt-3" id="sub-details-{{ forloop.counter }}">
+                <div class="card card-body">
+                    <p>Channel description for {{ sub.channel_title }} will go here.</p>
+                    <p>Creation Date: </p>
+                    <p>Subscriber Count: </p>
+                    <p>Total View Count: </p>
+                </div>
             </div>
         </div>
         {% endfor %}

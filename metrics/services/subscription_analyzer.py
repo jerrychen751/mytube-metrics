@@ -1,7 +1,6 @@
-from metrics.utils.date_helper import iso_to_datetime
+from metrics.utils.date_helper import isostr_to_datetime
 
 from typing import Generator, Dict, Any, List, Tuple
-from datetime import datetime
 
 def get_paginated_subscriptions(
     subscription_generator: Generator[Dict[str, Any], None, None], 
@@ -40,8 +39,9 @@ def get_paginated_subscriptions(
             # Build processed subscription dictionary
             processed_sub = {
                 'channel_title': snippet.get('title', 'N/A'),
+                'channel_id': snippet.get('resourceId', {}).get('channelId', ''),
                 'profile_picture_url': snippet.get('thumbnails', {}).get('default', {}).get('url'),
-                'published_at': iso_to_datetime(snippet.get('publishedAt', None)),
+                'published_at': isostr_to_datetime(snippet.get('publishedAt', None)),
                 'total_item_count': content_details.get('totalItemCount', 0),
                 'new_item_count': content_details.get('newItemCount', 0),
                 'channel_id': snippet.get('resourceId', {}).get('channelId')
@@ -50,6 +50,7 @@ def get_paginated_subscriptions(
 
     return {
         'subscriptions': processed_subs,
+        'subbed_channel_info': "placeholder",
         'has_next_page': has_next_page,
         'next_page_number': page_num + 1,
         'previous_page_number': page_num - 1,

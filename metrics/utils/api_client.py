@@ -39,6 +39,7 @@ class YouTubeClient:
         self.session = requests.Session()
             
         # --- Initialize Resource Handlers ---
+        self.channels = Channels(self)
         self.subscriptions = Subscriptions(self)
         
     def _make_request(self, endpoint_path: str, params: dict[str, str], use_oauth: bool = False) -> dict[str, Any] | None:

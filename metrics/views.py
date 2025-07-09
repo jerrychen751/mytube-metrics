@@ -84,16 +84,26 @@ def subscriptions_list(request):
     client = YouTubeClient(credentials=user_credentials)
     
     page_num = int(request.GET.get('page', 1))
-    subscription_generator = client.subscriptions.list_all_user_subscriptions()
-    if not subscription_generator:
-        print("none")
+    subscription_generator = client.subscriptions.stream_all_user_subscriptions()
 
-    # Get the paginated data from the analyzer
+    # Get the paginated subscription data
     from .services.subscription_analyzer import get_paginated_subscriptions
     pagination_data = get_paginated_subscriptions(
         subscription_generator, 
         page_num=page_num,
     )
+
+    # pagination_data.get('subscriptions') -> list of dictionaries (each dict representing a channel)
+    # Insert into each dictionary within that list a few additional pieces of information
+
+    from .services.channel_analyzer import 
+    # Get additional statistics on subscribed channels
+    subs_on_page = pagination_data.get('subscriptions', [])
+    if subs_on_page:
+        channel_ids = [sub['channel_id'] for sub in subs_on_page]
+        raw_channel_stats = client.channels.list(channel_ids=",".join(channel_ids))
+
+        
 
     return render(request, 'metrics/subscriptions_list.html', pagination_data)
 

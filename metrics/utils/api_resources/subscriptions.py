@@ -4,15 +4,20 @@ class Subscriptions:
     def __init__(self, client: Any) -> None:
         self._client = client
 
-    def list(self, part: str = "id,snippet,contentDetails", mine: bool = False, channel_id: Optional[str] = None, 
-            max_results: int = 50, order: str = "alphabetical", page_token: Optional[str] = None) -> Optional[Dict[str, Any]]:
+    def list(self, part: str = "id,snippet,contentDetails",
+             mine: bool = True, 
+             channel_id: Optional[str] = None,
+             max_results: int = 50,
+             order: str = "alphabetical",
+             page_token: Optional[str] = None
+            ) -> Optional[Dict[str, Any]]:
         """
-        List raw data obtained from YouTube Data API regarding subscriptions.
+        List a single page of raw data obtained from YouTube Data API regarding subscriptions.
         Corresponds to the subscriptions.list endpoint.
 
         Args:
-            part (str): Comma-separated list of one or more subscription resource properties. (e.g., 'snippet,contentDetails').
-            mine (bool): Set to True to retrieve the authenticated user's subscriptions.
+            part (str): Comma-separated list of subscription resource properties. (e.g., 'snippet,contentDetails').
+            mine (bool): Whether to retrieve the authenticated user's subscriptions or not.
             channel_id (Optional[str]): The ID of the channel for which to retrieve subscriptions. Cannot be used with `mine=True`.
             max_results (int): The maximum number of items to return per page (1-50).
             order (str): The order in which to retrieve the subscriptions. Accepts 'alphabetical', 'relevance', or 'unread'.
@@ -27,7 +32,6 @@ class Subscriptions:
             "maxResults": max_results,
             "order": order,
         }
-        use_oauth = False
 
         if mine:
             params["mine"] = "true"
@@ -40,9 +44,14 @@ class Subscriptions:
         if page_token:
             params["pageToken"] = page_token
 
-        return self._client._make_request("subscriptions", params=params, use_oauth=use_oauth)
+        # Make API request to list page of subscriptions
+        return self._client._make_request(
+            "subscriptions",
+            params=params,
+            use_oauth=use_oauth
+        )
 
-    def list_all_user_subscriptions(self, part: str = "id,snippet,contentDetails", 
+    def stream_all_user_subscriptions(self, part: str = "id,snippet,contentDetails", 
                                     order: str = "alphabetical") -> Generator[Dict[str,Any], None, None]:
         """
         Generator to list all of the authenticated user's subscription data.
