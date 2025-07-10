@@ -309,7 +309,7 @@ Max 50 items per request; pageinate with `nextPageToken`.
 	- videoCount (number of public videos)
 - topicDetails - object
 	- topicCategories - list of strings (wikipedia article URLs)
-		- trim trailing slash -> split on last "/" -> URL-decode percent-encoded chars -> replace underscores with spaces -> title-case
+		- trim trailing slash -> split on last "/" -> URL-decode percent-encoded chars -> replace underscores with spaces -> remove " (sociology)" -> title-case
 
 #### Playlists
 - id - str (yt playlist id)

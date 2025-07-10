@@ -33,18 +33,28 @@
             </div>
             <div class="collapse mt-3" id="sub-details-{{ forloop.counter }}">
                 {% load humanize %}
-                <div class="card card-body">
-                    <p><strong>Channel Stats:</strong></p>
+                <div class="card-body">
+                    {% if sub.channel_description %}
+                        <div class="description-wrapper">
+                            <p class="card-text description-text collapsed">{{ sub.channel_description }}</p>
+                            <a href="#" class="btn btn-link btn-sm p-0 read-more-btn" style="display: none;">Read more</a>
+                        </div>
+                        <hr>
+                    {% else %}
+                        <p class="card-text fst-italic">✨✨Nothing to see here✨✨</p>
+                        <hr>
+                    {% endif %}
+                    <p class="mb-1"><strong>Channel Stats:</strong></p>
                     <ul class="list-unstyled">
                         <li>Subscriber Count: {{ sub.subscriber_count|default:"N/A"|intcomma }}</li>
-                        <li>Total View Count: {{ sub.view_count|default:"N/A"|intcomma }}</li>
+                        <li>View Count: {{ sub.view_count|default:"N/A"|intcomma }}</li>
                         <li>Total Videos: {{ sub.video_count|default:"N/A"|intcomma }}</li>
                         {% if sub.topics %}
                         <li>
-                            <strong>Frequently-Occurring Topics:</strong>
+                            <strong class="mt-3 d-block">Frequently-Occurring Topics:</strong>
                             <ul class="list-inline">
                                 {% for topic in sub.topics %}
-                                <li class="list-inline-item"><span class="badge bg-secondary">{{ topic }}</span></li>
+                                <li class="list-inline-item"><span class="badge bg-primary">{{ topic }}</span></li>
                                 {% endfor %}
                             </ul>
                         </li>
@@ -91,4 +101,70 @@
 
     <a href="{% url 'dashboard' %}" class="btn btn-secondary mt-4">Back to Dashboard</a>
 </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<style>
+.description-text.collapsed {
+    max-height: 5.5em; /* Approx 3 lines */
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 0;
+}
+.description-text.collapsed::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2em;
+    background: linear-gradient(to bottom, rgba(255,255,255,0), white);
+}
+.read-more-btn {
+    display: block;
+    margin-top: 0.5rem;
+}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var collapseElements = document.querySelectorAll('.collapse');
+
+    collapseElements.forEach(function(collapseEl) {
+        // When a collapse element is shown
+        collapseEl.addEventListener('shown.bs.collapse', function () {
+            var wrapper = this.querySelector('.description-wrapper');
+            if (!wrapper) return;
+
+            var text = wrapper.querySelector('.description-text');
+            var btn = wrapper.querySelector('.read-more-btn');
+
+            // Check if the text is overflowing now that it's visible
+            if (text.scrollHeight > text.clientHeight) {
+                btn.style.display = 'block';
+            } else {
+                text.classList.remove('collapsed');
+            }
+
+            btn.addEventListener('click', function(e) {
+                e.preventDefault();
+                text.classList.remove('collapsed');
+                btn.style.display = 'none';
+            }, { once: true }); // Use { once: true } to avoid attaching multiple listeners
+        });
+
+        // When a collapse element is hidden
+        collapseEl.addEventListener('hidden.bs.collapse', function () {
+            var wrapper = this.querySelector('.description-wrapper');
+            if (!wrapper) return;
+
+            var text = wrapper.querySelector('.description-text');
+            var btn = wrapper.querySelector('.read-more-btn');
+
+            // Reset the state
+            text.classList.add('collapsed');
+            btn.style.display = 'none';
+        });
+    });
+});
+</script>
 {% endblock %}

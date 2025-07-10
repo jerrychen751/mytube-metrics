@@ -77,7 +77,9 @@ class Channels:
             parsed_topics = []
             for url in topic_urls:
                 topic = unquote(url.split('/')[-1]).replace('_', ' ')
-                parsed_topics.append(topic)
+                if '(sociology)' in topic.lower():
+                    topic = topic.lower().replace(' (sociology)', '')
+                parsed_topics.append(topic.title())
 
             data = {
                 "channel_name": snippet.get('title', ""),
