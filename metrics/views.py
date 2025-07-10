@@ -106,6 +106,14 @@ def subscriptions_list(request):
 
     return render(request, 'metrics/subscriptions_list.html', pagination_data)
 
+# --- Content Affinity Analysis (content_affinity/) ---
+@login_required
+def content_affinity(request):
+    return render(request, 'metrics/content_affinity.html')
+
+
+# --- Logout Page (logout/) ---
+
 # --- Logout Page (logout/) ---
 from django.contrib.auth import logout
 
