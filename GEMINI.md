@@ -60,9 +60,7 @@ The `mytube_metrics` project is organized as follows:
 ├───GEMINI.md
 ├───manage.py
 ├───.git/...
-├───.mypy_cache/
-│   └───3.13/...
-├───metrics_app/
+├───metrics/
 │   ├───__init__.py
 │   ├───admin.py
 │   ├───apps.py
@@ -75,19 +73,30 @@ The `mytube_metrics` project is organized as follows:
 │   │   ├───__init__.py
 │   │   ├───0001_initial.py
 │   │   ├───0002_alter_usercredential_refresh_token.py
+│   │   ├───0003_usercredential_profile_picture_url.py
 │   │   └───__pycache__/
 │   ├───services/
-│   │   ├───metric_analyzer.py
-│   │   └───metric_visualizer.py
+│   │   ├───channel_analyzer.py
+│   │   ├───subscription_analyzer.py
+│   │   └───visualizer.py
 │   ├───templates/
-│   │   └───metrics_app/
+│   │   └───metrics/
+│   │       ├───base.html
 │   │       ├───dashboard.html
-│   │       └───login.html
+│   │       ├───login.html
+│   │       └───subscriptions_list.html
 │   └───utils/
+│       ├───__pycache__/
 │       ├───api_client.py
 │       ├───auth_helper.py
-│       ├───database_helper.py
-│       └───__pycache__/
+│       ├───date_helper.py
+│       └───api_resources/
+│           ├───__init__.py
+│           ├───activities.py
+│           ├───channels.py
+│           ├───playlists.py
+│           ├───subscriptions.py
+│           └───videos.py
 ├───mytube_metrics/
 │   ├───__init__.py
 │   ├───asgi.py
@@ -95,49 +104,31 @@ The `mytube_metrics` project is organized as follows:
 │   ├───urls.py
 │   ├───wsgi.py
 │   └───__pycache__/
-├───old/
-│   ├───channel_endpoint.py
-│   ├───channel_example.json
-│   ├───diagram.puml
-│   ├───users.sql
-│   └───src/
-│       ├───.DS_Store
-│       └───mytube_metrics/
-│           ├───auth.py
-│           ├───database.py
-│           ├───main.py
-│           ├───metric_analyzer.py
-│           ├───metric_visualizer.py
-│           ├───static/
-│           │   ├───css/
-│           │   └───js/
-│           ├───templates/
-│           └───youtube_api/
-│               ├───__init__.py
-│               ├───channels.py
-│               ├───client.py
-│               ├───playlists.py
-│               ├───subscriptions.py
-│               └───videos.py
 └───venv/
     ├───bin/...
     ├───include/...
     └───lib/...
 ```
 
--   **`metrics`**: The main application directory.
-    -   **`services`**: Contains the metric analyzer and visualizer.
-        -   **`metric_analyzer.py`**: Analyzes the user's YouTube data and calculates various metrics.
-        -   **`metric_visualizer.py`**: Creates visualizations of the user's YouTube data.
-    -   **`templates`**: Contains HTML templates for the web application.
-    -   **`utils`**: Contains helper functions for the application.
+-   **`metrics`**: The main Django application.
+    -   **`services`**: Contains modules for analyzing and visualizing YouTube data.
+        -   **`channel_analyzer.py`**: Analyzes YouTube channel data.
+        -   **`subscription_analyzer.py`**: Analyzes YouTube subscription data.
+        -   **`visualizer.py`**: Creates visualizations from analyzed data.
+    -   **`templates`**: Contains HTML templates for the web application, organized by app.
+    -   **`utils`**: Contains utility functions and API resource handlers.
         -   **`api_client.py`**: A client for interacting with the YouTube Data API.
         -   **`auth_helper.py`**: Handles user authentication and authorization.
-        -   **`database_helper.py`**: Manages the connection to the MySQL database.
--   **`mytube_metrics`**: The project directory.
+        -   **`date_helper.py`**: Provides helper functions for date and time manipulation.
+        -   **`api_resources`**: Contains modules for interacting with specific YouTube Data API resources.
+            -   **`activities.py`**: Handles YouTube Activities API requests.
+            -   **`channels.py`**: Handles YouTube Channels API requests.
+            -   **`playlists.py`**: Handles YouTube Playlists API requests.
+            -   **`subscriptions.py`**: Handles YouTube Subscriptions API requests.
+            -   **`videos.py`**: Handles YouTube Videos API requests.
+-   **`mytube_metrics`**: The main Django project configuration.
     -   **`settings.py`**: Contains the settings for the Django project.
     -   **`urls.py`**: Contains the URL patterns for the Django project.
--   **`old`**: Contains the old source code.
 -   **`.env`**: Contains environment variables for the project.
 -   **`.gitignore`**: Specifies which files and directories to ignore in Git.
 -   **`manage.py`**: A command-line utility for interacting with the Django project.
