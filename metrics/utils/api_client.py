@@ -5,9 +5,10 @@ from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import AuthorizedSession
 
 from metrics.models import UserCredential
-from .api_resources import Channels, Playlists, Subscriptions, Videos
+from .api_resources import Channels, Playlists, Subscriptions, Videos, PlaylistItems
 
 from typing import Any
+from .types import ApiResponse
 
 class YouTubeClient:
     """
@@ -40,40 +41,14 @@ class YouTubeClient:
             
         # --- Initialize Resource Handlers ---
         self.channels = Channels(self)
+        self.playlists = Playlists(self)
         self.subscriptions = Subscriptions(self)
-        
-    def _make_request(self, endpoint_path: str, params: dict[str, str], use_oauth: bool = False) -> dict[str, Any] | None:
+        self.playlist_items = PlaylistItems(self)
         """
-        Make a request to a specific YouTube Data API endpoint.
-        
+        Initializes the YouTubeClient.
+
         Args:
-            endpoint_path (str): Path to the API endpoint.
-            params (dict): A dictionary of parameters for API call.
-            use_oauth (bool): If True, uses the OAuth token. If False, uses the API key.
-
-        Returns:
-            The JSON response from the API as a dictionary, or None if an error occurs.
+            credentials (UserCredential | None): The user's credentials for OAuth authentication.
         """
-        url = f"{self.BASE_URL}/{endpoint_path}"
-        request_params = params.copy()
-
-        session = self.auth_session if use_oauth else self.session
-        
-        if not use_oauth:
-            if not self.api_key:
-                raise ValueError("Cannot make public request without an API key.")
-            request_params["key"] = self.api_key
-
-        try:
-            response = session.get(url=url, params=request_params)
-            response.raise_for_status()
-            return response.json()
-        except requests.exceptions.RequestException as e:
-            # If the authorized session failed, the credentials might be invalid.
-            # The user may need to re-authenticate.
-            print(f"An API request error occurred: {e}")
-            if response:
-                print(f"Response: {response.text}")
-            return None
 
     

@@ -1,7 +1,14 @@
-from typing import Dict, Any, Optional, Generator
+from typing import Any, Optional, Generator
+from metrics.utils.types import ApiResponse
 
 class Subscriptions:
     def __init__(self, client: Any) -> None:
+        """
+        Initializes the Subscriptions resource handler.
+
+        Args:
+            client (Any): The YouTubeClient instance for making API requests.
+        """
         self._client = client
 
     def list(self, part: str = "id,snippet,contentDetails",
@@ -10,7 +17,7 @@ class Subscriptions:
              max_results: int = 50,
              order: str = "alphabetical",
              page_token: Optional[str] = None
-            ) -> Optional[Dict[str, Any]]:
+            ) -> Optional[ApiResponse]:
         """
         List a single page of raw data obtained from YouTube Data API regarding subscriptions.
         Corresponds to the subscriptions.list endpoint.
@@ -24,7 +31,7 @@ class Subscriptions:
             page_token (Optional[str]): The `nextPageToken` or `prevPageToken` from a previous API response to retrieve a specific page of results.
 
         Returns:
-            Optional[Dict[str, Any]]: The JSON response from the API as a dictionary, or None if an error occurs.
+            Optional[ApiResponse]: The JSON response from the API as a dictionary, or None if an error occurs.
         """
         # Build params dictionary
         params: Dict[str, Any] = {
@@ -53,7 +60,7 @@ class Subscriptions:
         )
 
     def stream_all_user_subscriptions(self, part: str = "id,snippet,contentDetails", 
-                                    order: str = "alphabetical") -> Generator[Dict[str,Any], None, None]:
+                                    order: str = "alphabetical") -> Generator[ApiResponse, None, None]:
         """
         Generator to list all of the authenticated user's subscription data.
 
@@ -63,7 +70,7 @@ class Subscriptions:
             order (str): The order in which to retrieve the subscriptions. Accepts 'alphabetical', 'relevance', or 'unread'.
 
         Yields:
-            Dict[str, Any]: A dictionary representing a single subscription item. None if there is an error during listing.
+            ApiResponse: A dictionary representing a single subscription item. None if there is an error during listing.
         """
         next_page_token: Optional[str] = None
         while True:

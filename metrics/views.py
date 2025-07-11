@@ -1,9 +1,9 @@
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
 
-from .utils.auth_helper import OAuth
 from .models import UserCredential
 from .utils.api_client import YouTubeClient
+from .utils.auth_helper import OAuth
 
 # --- Initial Login Page ---
 def google_login(request):
@@ -109,10 +109,33 @@ def subscriptions_list(request):
 # --- Content Affinity Analysis (content_affinity/) ---
 @login_required
 def content_affinity(request):
+    """
+    Renders the content affinity analysis page.
+
+    This view fetches the authenticated user's channel data, extracts the liked videos playlist ID,
+    and then retrieves and processes the items within that playlist.
+
+    Args:
+        request (HttpRequest): The HTTP request object.
+
+    Returns:
+        HttpResponse: The rendered content affinity analysis page.
+    """
+    user_credentials = request.user.usercredential
+    client = YouTubeClient(credentials=user_credentials)
+
+    raw_channel_data = client.channels.list(mine=True)
+    processed_channel_data = client.channels.process_raw_stats(raw_channel_data)
+    
+    # Get the first channel's data from the dictionary of processed channels
+    first_channel_data = next(iter(processed_channel_data.values()), None)
+    liked_videos_playlist_id = first_channel_data.get('liked_videos_playlist_id', "") if first_channel_data else ""
+    if liked_videos_playlist_id:
+        raw_playlist_items = client.playlist_items.list(playlist_id=liked_videos_playlist_id)
+        processed_playlist_items = client.playlist_items.process_raw_items(raw_playlist_items)
+
     return render(request, 'metrics/content_affinity.html')
 
-
-# --- Logout Page (logout/) ---
 
 # --- Logout Page (logout/) ---
 from django.contrib.auth import logout

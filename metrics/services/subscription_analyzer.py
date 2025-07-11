@@ -1,12 +1,13 @@
 from metrics.utils.date_helper import isostr_to_datetime
 
-from typing import Generator, Dict, Any, List, Tuple
+from typing import Generator, List, Tuple, Any
+from metrics.utils.api_client import ApiResponse
 
 def get_paginated_subscriptions(
-    subscription_generator: Generator[Dict[str, Any], None, None], 
+    subscription_generator: Generator[ApiResponse, None, None], 
     page_num: int = 1, 
     items_per_page: int = 25
-) -> Dict[str, Any]:
+) -> ApiResponse:
     """
     Paginates subscription data from a generator and formats it for display.
 
@@ -15,14 +16,14 @@ def get_paginated_subscriptions(
     subscriptions, along with context for pagination controls (e.g., next/previous page).
 
     Args:
-        subscription_generator (Generator[Dict[str, Any], None, None]): A generator that yields
+        subscription_generator (Generator[ApiResponse, None, None]): A generator that yields
             raw subscription item dictionaries from the YouTube API.
         page_num (int, optional): The page number to retrieve (1-indexed). Defaults to 1.
         items_per_page (int, optional): The number of items to display per page.
             Defaults to 25.
 
     Returns:
-        Dict[str, Any]: A dictionary containing the processed subscriptions for the
+        ApiResponse: A dictionary containing the processed subscriptions for the
         requested page and pagination context. The dictionary has the following keys:
             - 'subscriptions' (Dict[str, Dict[str, Any]]): A dictionary of processed
               subscription data, with channel IDs as keys.
