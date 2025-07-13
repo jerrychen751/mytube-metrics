@@ -1,4 +1,4 @@
-from typing import Any, Optional, Generator
+from typing import Any, Optional, Generator, Dict
 from metrics.utils.types import ApiResponse
 
 class Subscriptions:

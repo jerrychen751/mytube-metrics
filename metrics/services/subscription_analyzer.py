@@ -1,7 +1,7 @@
 from metrics.utils.date_helper import isostr_to_datetime
 
 from typing import Generator, List, Tuple, Any
-from metrics.utils.api_client import ApiResponse
+from metrics.utils.types import ApiResponse
 
 def get_paginated_subscriptions(
     subscription_generator: Generator[ApiResponse, None, None], 

@@ -32,7 +32,7 @@ class Activities:
                 params["pageToken"] = next_page_token
 
             try:
-                data = self._make_request("activities", params, headers)
+                data = self._client._make_request("activities", params, headers)
                 if "items" in data:
                     for item in data["items"]:
                         yield item

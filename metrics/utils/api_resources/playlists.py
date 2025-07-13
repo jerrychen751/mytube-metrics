@@ -12,7 +12,7 @@ class Playlists:
         """
         self._client = client
 
-    def list_playlist(self, part: str = "id,snippet,contentDetails,status",
+    def list(self, part: str = "id,snippet,contentDetails,status",
                       mine: bool = False,
                       playlist_ids: Optional[str] = None,
                       channel_id: Optional[str] = None,

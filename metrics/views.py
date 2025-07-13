@@ -109,32 +109,27 @@ def subscriptions_list(request):
 # --- Content Affinity Analysis (content_affinity/) ---
 @login_required
 def content_affinity(request):
-    """
-    Renders the content affinity analysis page.
+    from .services.content_analyzer import get_content_affinity_context
 
-    This view fetches the authenticated user's channel data, extracts the liked videos playlist ID,
-    and then retrieves and processes the items within that playlist.
-
-    Args:
-        request (HttpRequest): The HTTP request object.
-
-    Returns:
-        HttpResponse: The rendered content affinity analysis page.
-    """
+    context = get_content_affinity_context(request.user)
+    
     user_credentials = request.user.usercredential
     client = YouTubeClient(credentials=user_credentials)
 
     raw_channel_data = client.channels.list(mine=True)
     processed_channel_data = client.channels.process_raw_stats(raw_channel_data)
     
-    # Get the first channel's data from the dictionary of processed channels
+    # Obtain user's primary channel's data from the dictionary of processed channels
     first_channel_data = next(iter(processed_channel_data.values()), None)
     liked_videos_playlist_id = first_channel_data.get('liked_videos_playlist_id', "") if first_channel_data else ""
     if liked_videos_playlist_id:
+        # Create context dictionary
         raw_playlist_items = client.playlist_items.list(playlist_id=liked_videos_playlist_id)
         processed_playlist_items = client.playlist_items.process_raw_items(raw_playlist_items)
 
-    return render(request, 'metrics/content_affinity.html')
+        
+
+    return render(request, 'metrics/content_affinity.html', context)
 
 
 # --- Logout Page (logout/) ---

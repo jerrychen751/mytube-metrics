@@ -6,12 +6,6 @@ from metrics.utils.types import ApiResponse
 
 class Channels:
     def __init__(self, client: Any) -> None:
-        """
-        Initializes the Channels resource handler.
-
-        Args:
-            client (Any): The YouTubeClient instance for making API requests.
-        """
         self._client = client
 
     def list(self, part: str = "id,snippet,contentDetails,statistics,topicDetails",
@@ -79,14 +73,8 @@ class Channels:
             statistics = channel_resource.get('statistics', {})
             topic_details = channel_resource.get('topicDetails', {})
             
-            # Parse topic URLs
-            topic_urls = topic_details.get('topicCategories', [])
-            parsed_topics = []
-            for url in topic_urls:
-                topic = unquote(url.split('/')[-1]).replace('_', ' ')
-                if '(sociology)' in topic.lower():
-                    topic = topic.lower().replace(' (sociology)', '')
-                parsed_topics.append(topic.title())
+            from metrics.utils.topic_helper import parse_topic_urls
+            parsed_topics = parse_topic_urls(topic_details)
 
             data = {
                 "channel_name": snippet.get('title', ""),
@@ -105,3 +93,20 @@ class Channels:
             channel_data[channel_id] = data
             
         return channel_data
+    
+    def get_liked_playlist_id(self) -> str:
+        """
+        Fetches the ID of the authenticated user's "Liked Videos" playlist.
+
+        This is a convenience method that calls the `channels.list` endpoint with `mine=true` and extracts the `likes` playlist ID from the `contentDetails` part of the response.
+
+        Returns:
+            str: The playlist ID for the user's liked videos.
+
+        Raises:
+            KeyError: If the playlist ID cannot be found in the API response.
+            ValueError: If the API response is invalid or missing necessary items.
+        """
+        raw_channel_data = self.list(mine=True)
+        processed_channel_data = self.process_raw_stats(raw_channel_data)
+        return processed_channel_data["liked_videos_playlist_id"]

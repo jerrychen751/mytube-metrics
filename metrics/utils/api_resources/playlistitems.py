@@ -1,4 +1,4 @@
-from typing import Any, Optional, Dict
+from typing import Any, Optional, Dict, List
 from metrics.utils.date_helper import isostr_to_datetime
 from metrics.utils.types import ApiResponse
 
@@ -30,6 +30,7 @@ class PlaylistItems:
         Returns:
             Optional[ApiResponse]: The JSON response from the API as a dictionary, or None if an error occurs.
         """
+        # Build params dictionary
         if not playlist_id:
             raise ValueError("playlist_id must be provided.")
 
@@ -48,6 +49,35 @@ class PlaylistItems:
             params=params,
             use_oauth=True # playlistItems always require OAuth
         )
+    
+    def list_all(self, playlist_id: str) -> Dict[int, ApiResponse]:
+        """
+        Fetches all item resources from a specific playlist, handling pagination automatically.
+
+        This method repeatedly calls the `playlistItems.list` endpoint, using the
+        `nextPageToken` from each response to request the subsequent page, until
+        all items have been retrieved.
+
+        Args:
+            playlist_id (str): The ID of the playlist for which to retrieve all items.
+
+        Returns:
+            Dict[int, Any]: A dictionary with keys of page numberings (50 entries per page) and values containing all the raw playlistItem resources listed from the API.
+            Returns an empty list if the playlist is empty or an error occurs.
+        """
+        all_videos = {}
+        page_token = None
+        page_num = 0
+        while True:
+            api_response = self.list(playlist_id=playlist_id, page_token=page_token)
+            if api_response:
+                all_videos[page_num] = api_response
+                page_token = api_response.get('items', {}).get('nextPageToken', None)
+            
+            if not page_token or not api_response:
+                    break
+                    
+        return all_videos
 
     @staticmethod
     def process_raw_items(raw_playlist_items_data: ApiResponse) -> Optional[Dict[str, Any]]:
