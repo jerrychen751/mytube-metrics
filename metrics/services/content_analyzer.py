@@ -16,6 +16,7 @@ def get_content_affinity_context(user: User) -> Dict[str, Any]:
 
     Resulting context dictionary will contain dictionaries containing:
         - topics mapped to their frequencies for videos within liked-videos playlist
+        - video categories mapped to their frequencies for videos within liked-videos playlist
         - recommended video id mapped to its relevant information (e.g., title, image url, reason for recommendation)
     """
     # Obtain creds from database
@@ -39,15 +40,18 @@ def get_topic_freqs_in_playlistitems(all_playlistitems: Dict[str, ApiResponse]) 
     Take all the listed playlistitems and obtain the frequency of topics within that playlist.
 
     Args:
-        all_playlistitems (Dict[int, ApiResponse]): The li
+        all_playlistitems (Dict[int, ApiResponse]): A paginated dictionary of raw API responses from the PlaylistItems resource.
 
     Returns:
         Optional[Dict[str, int]]: A dictionary with topic keys and a counter value for how many times that topic has appeared in the liked videos playlist.
     """
     from metrics.utils.topic_helper import parse_topic_urls
 
-    topic_freqs = {}
+    video_ids = []
     for api_response in all_playlistitems.values():
         items = api_response['items']
         for item in items:
-            pass
+            if item['resourceId']['kind'] == "youtube#video":
+                video_ids.append(item['resourceId']['videoId'])
+
+    

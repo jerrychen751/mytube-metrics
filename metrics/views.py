@@ -28,7 +28,7 @@ def google_login(request):
     return render(request, 'metrics/login.html')
 
 # --- OAuth Flow (callback/) ---
-from django.contrib.auth import login
+from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
 import requests
 
@@ -78,62 +78,72 @@ def dashboard(request):
     return render(request, 'metrics/dashboard.html')
 
 # --- Subscription Insights (subscriptions/) ---
+from google.auth.exceptions import RefreshError
+
 @login_required
 def subscriptions_list(request):
     user_credentials = request.user.usercredential
-    client = YouTubeClient(credentials=user_credentials)
     
-    page_num = int(request.GET.get('page', 1))
-    subscription_generator = client.subscriptions.stream_all_user_subscriptions()
+    try:
+        client = YouTubeClient(credentials=user_credentials)
+        
+        page_num = int(request.GET.get('page', 1))
+        subscription_generator = client.subscriptions.stream_user_subscriptions()
 
-    # Get the paginated subscription data
-    from .services.subscription_analyzer import get_paginated_subscriptions
-    pagination_data = get_paginated_subscriptions(
-        subscription_generator, 
-        page_num=page_num,
-    )
+        # Get the paginated subscription data
+        from .services.subscription_analyzer import get_paginated_subscriptions
+        pagination_data = get_paginated_subscriptions(
+            subscription_generator, 
+            page_num=page_num,
+        )
 
-    # Get additional statistics on current page of subscriptions (25 max)
-    subs_on_page = pagination_data.get('subscriptions', {}) # dictionaries mapping channel ids to channel data
-    if subs_on_page:
-        channel_ids = [channel_id for channel_id in subs_on_page]
-        raw_channel_stats = client.channels.list(channel_ids=",".join(channel_ids))
-        processed_channel_stats = client.channels.process_raw_stats(raw_channel_stats)
+        # Get additional statistics on current page of subscriptions (25 max)
+        subs_on_page = pagination_data.get('subscriptions', {}) # dictionaries mapping channel ids to channel data
+        if subs_on_page:
+            channel_ids = [channel_id for channel_id in subs_on_page]
+            raw_channel_stats = client.channels.list(channel_ids=",".join(channel_ids))
+            processed_channel_stats = client.channels.process_raw_stats(raw_channel_stats)
 
-        for channel_id, channel_data in subs_on_page.items():
-            if channel_id in processed_channel_stats:
-                channel_data.update(processed_channel_stats[channel_id])
+            for channel_id, channel_data in subs_on_page.items():
+                if channel_id in processed_channel_stats:
+                    channel_data.update(processed_channel_stats[channel_id])
 
-    return render(request, 'metrics/subscriptions_list.html', pagination_data)
+        return render(request, 'metrics/subscriptions_list.html', pagination_data)
+    except RefreshError:
+        # If refresh token is expired or revoked, re-authenticate the user
+        logout(request)
+        return redirect('login')
 
 # --- Content Affinity Analysis (content_affinity/) ---
 @login_required
 def content_affinity(request):
-    from .services.content_analyzer import get_content_affinity_context
-
-    context = get_content_affinity_context(request.user)
-    
     user_credentials = request.user.usercredential
-    client = YouTubeClient(credentials=user_credentials)
 
-    raw_channel_data = client.channels.list(mine=True)
-    processed_channel_data = client.channels.process_raw_stats(raw_channel_data)
-    
-    # Obtain user's primary channel's data from the dictionary of processed channels
-    first_channel_data = next(iter(processed_channel_data.values()), None)
-    liked_videos_playlist_id = first_channel_data.get('liked_videos_playlist_id', "") if first_channel_data else ""
-    if liked_videos_playlist_id:
-        # Create context dictionary
-        raw_playlist_items = client.playlist_items.list(playlist_id=liked_videos_playlist_id)
-        processed_playlist_items = client.playlist_items.process_raw_items(raw_playlist_items)
+    try:
+        from .services.content_analyzer import get_content_affinity_context
 
+        context = get_content_affinity_context(request.user)
         
+        client = YouTubeClient(credentials=user_credentials)
 
-    return render(request, 'metrics/content_affinity.html', context)
+        raw_channel_data = client.channels.list(mine=True)
+        processed_channel_data = client.channels.process_raw_stats(raw_channel_data)
+        
+        # Obtain user's primary channel's data from the dictionary of processed channels
+        first_channel_data = next(iter(processed_channel_data.values()), None)
+        liked_videos_playlist_id = first_channel_data.get('liked_videos_playlist_id', "") if first_channel_data else ""
+        if liked_videos_playlist_id:
+            # Create context dictionary
+            raw_playlist_items = client.playlist_items.list(playlist_id=liked_videos_playlist_id)
+            processed_playlist_items = client.playlist_items.process_raw_items(raw_playlist_items)
+
+        return render(request, 'metrics/content_affinity.html', context)
+    except RefreshError:
+        logout(request)
+        return redirect('login')
 
 
 # --- Logout Page (logout/) ---
-from django.contrib.auth import logout
 
 def user_logout(request):
     logout(request)

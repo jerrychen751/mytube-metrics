@@ -62,22 +62,22 @@ class PlaylistItems:
             playlist_id (str): The ID of the playlist for which to retrieve all items.
 
         Returns:
-            Dict[int, Any]: A dictionary with keys of page numberings (50 entries per page) and values containing all the raw playlistItem resources listed from the API.
+            Dict[int, ApiResponse]: A dictionary with keys of page numberings (50 entries per page) and values containing all the raw playlistItem resources listed from the API.
             Returns an empty list if the playlist is empty or an error occurs.
         """
-        all_videos = {}
+        all_playlistitems = {}
         page_token = None
         page_num = 0
         while True:
             api_response = self.list(playlist_id=playlist_id, page_token=page_token)
             if api_response:
-                all_videos[page_num] = api_response
+                all_playlistitems[page_num] = api_response
                 page_token = api_response.get('items', {}).get('nextPageToken', None)
             
             if not page_token or not api_response:
-                    break
+                break
                     
-        return all_videos
+        return all_playlistitems
 
     @staticmethod
     def process_raw_items(raw_playlist_items_data: ApiResponse) -> Optional[Dict[str, Any]]:
