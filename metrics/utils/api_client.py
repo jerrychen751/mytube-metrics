@@ -43,6 +43,7 @@ class YouTubeClient:
         self.channels = Channels(self)
         self.playlists = Playlists(self)
         self.subscriptions = Subscriptions(self)
+        self.videos = Videos(self)
         self.playlist_items = PlaylistItems(self)
         
     def _make_request(self, endpoint_path: str, params: dict[str, str], use_oauth: bool = False) -> ApiResponse | None:

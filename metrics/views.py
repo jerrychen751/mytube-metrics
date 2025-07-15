@@ -142,7 +142,6 @@ def content_affinity(request):
         logout(request)
         return redirect('login')
 
-
 # --- Logout Page (logout/) ---
 
 def user_logout(request):

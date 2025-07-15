@@ -72,9 +72,12 @@ class PlaylistItems:
             api_response = self.list(playlist_id=playlist_id, page_token=page_token)
             if api_response:
                 all_playlistitems[page_num] = api_response
-                page_token = api_response.get('items', {}).get('nextPageToken', None)
+                page_token = api_response.get('nextPageToken')
+                page_num += 1
+            else:
+                break
             
-            if not page_token or not api_response:
+            if not page_token:
                 break
                     
         return all_playlistitems
