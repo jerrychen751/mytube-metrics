@@ -14,12 +14,16 @@ from metrics.utils.topic_helper import parse_topic_urls
 
 def get_content_affinity_context(user: User) -> Dict[str, Any]:
     """
-    Build context for `content_affinity` function in `views.py`.
+    Build context for the `content_affinity` view.
 
-    Resulting context dictionary will contain dictionaries containing:
-        - topics mapped to their frequencies for videos within liked-videos playlist
-        - video categories mapped to their frequencies for videos within liked-videos playlist
-        - recommended video id mapped to its relevant information (e.g., title, image url, reason for recommendation)
+    This function currently analyzes the user's "Liked Videos" playlist to determine
+    the frequency of different video topics and categories.
+
+    The resulting context dictionary contains:
+        - 'topic_freqs': A dictionary mapping topic names to their frequency.
+        - 'category_freqs': A dictionary mapping category names to their frequency.
+
+    Future implementation will also include analysis of recommended videos.
     """
     # Obtain creds from database
     creds = user.usercredential

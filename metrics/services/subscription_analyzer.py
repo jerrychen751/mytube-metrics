@@ -8,11 +8,23 @@ from metrics.utils.date_helper import isostr_to_datetime
 
 def get_subscription_list_context(user: User, page_num: int) -> Dict[str, Any]:
     """
-    Build context for `subscriptions_list` function in `views.py`.
+    Build context for the `subscriptions_list` view.
 
-    Resulting context dictionary will contain dictionaries containing:
-        - subscriptions mapped to their processed data for the current page
-        - pagination context (e.g., has_next_page, next_page_number)
+    This function fetches a paginated list of the user's subscriptions,
+    enriches it with detailed channel statistics, and provides pagination context.
+
+    Args:
+        user (User): The authenticated Django user object.
+        page_num (int): The page number to retrieve.
+
+    Returns:
+        A dictionary containing the processed subscription data for the
+        requested page and all necessary pagination context, including:
+        - 'subscriptions': A dictionary of subscription data for the current page.
+        - 'has_next_page': A boolean indicating if there is a next page.
+        - 'next_page_number': The number of the next page.
+        - 'has_previous_page': A boolean indicating if there is a previous page.
+        - 'previous_page_number': The number of the previous page.
     """
     # Obtain creds from database
     creds = user.usercredential
