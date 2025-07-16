@@ -76,24 +76,26 @@ The `mytube_metrics` project is organized as follows:
 │   │   ├───0003_usercredential_profile_picture_url.py
 │   │   └───__pycache__/
 │   ├───services/
-│   │   ├───channel_analyzer.py
+│   │   ├───content_analyzer.py
 │   │   ├───subscription_analyzer.py
 │   │   └───visualizer.py
 │   ├───templates/
 │   │   └───metrics/
 │   │       ├───base.html
+│   │       ├───content_affinity.html
 │   │       ├───dashboard.html
 │   │       ├───login.html
 │   │       └───subscriptions_list.html
 │   └───utils/
 │       ├───__pycache__/
-│       ├───api_client.py
+│       ├─��─api_client.py
 │       ├───auth_helper.py
 │       ├───date_helper.py
 │       └───api_resources/
 │           ├───__init__.py
 │           ├───activities.py
 │           ├───channels.py
+│           ├───playlistitems.py
 │           ├───playlists.py
 │           ├───subscriptions.py
 │           └───videos.py
@@ -112,7 +114,7 @@ The `mytube_metrics` project is organized as follows:
 
 -   **`metrics`**: The main Django application.
     -   **`services`**: Contains modules for analyzing and visualizing YouTube data.
-        -   **`channel_analyzer.py`**: Analyzes YouTube channel data.
+        -   **`content_analyzer.py`**: Analyzes user content affinity (e.g., liked videos).
         -   **`subscription_analyzer.py`**: Analyzes YouTube subscription data.
         -   **`visualizer.py`**: Creates visualizations from analyzed data.
     -   **`templates`**: Contains HTML templates for the web application, organized by app.
@@ -123,6 +125,7 @@ The `mytube_metrics` project is organized as follows:
         -   **`api_resources`**: Contains modules for interacting with specific YouTube Data API resources.
             -   **`activities.py`**: Handles YouTube Activities API requests.
             -   **`channels.py`**: Handles YouTube Channels API requests.
+            -   **`playlistitems.py`**: Handles YouTube PlaylistItems API requests.
             -   **`playlists.py`**: Handles YouTube Playlists API requests.
             -   **`subscriptions.py`**: Handles YouTube Subscriptions API requests.
             -   **`videos.py`**: Handles YouTube Videos API requests.
@@ -136,7 +139,7 @@ The `mytube_metrics` project is organized as follows:
 ## User-Centric Functionalities
 
 ### 1. Authorization/Authentication
-Users are able to log into the web app and securely authenticate their Google Account for the app to access (read-only) information about their YouTube profile.
+Users are able to log into the web app and securely authenticate their Google Account for the app to access (read-only) information about their YouTube profile. This functionality is fully implemented.
 
 **Specific Implementation**
 The following scopes/permissions are being asked for:
@@ -156,22 +159,26 @@ At a high level:
 4. Use the authorization response containing authorization code to fetch token, allowing for the extraction of credentails from flow object. Return credentials to be used and also store access/refresh token in backend MySQL database.
 
 ### 2. FrontEnd Web Interface
-Users should have a variety of options once they have logged into the app to check detailed information regarding their own YouTube account. They can be broadly divided into a few categories based on Google's YouTube Data API endpoints/resources. Each bullet point below the resource name specifies something that the user should be able to "do" with the web app / final project.
+Users have a variety of options once they have logged into the app to check detailed information regarding their own YouTube account. They can be broadly divided into a few categories based on Google's YouTube Data API endpoints/resources.
 
-- **Activities** - why certain videos were recommended, what videos the user has liked, any recent subscriptions, comments
-	- See which channels/creators the user has engaged with the most in recent time period.
-	- Better understand the roots behind the videos which were recommended. (look into more)
-		- (Look Familiar?) Due to x/y/z videos/channels/playlists you watched, these recent recommendations were made.
-- **Channel** - channel stats, topics, ID of liked videos playlist + uploaded videos playlist --> goes to Playlists Resource
-	- See channel stats of subscribed channels (view/sub/vid ct) as well as the predominant topics across subscriptions.
-		- by channel ID
-	- Analyze any overlaps between liked videos and subscriptions and potentially conduct analysis of the types of content the user likes.
-- **Playlists/PlaylistItems** - general playlist info (with ids of specific videos) + related channel
-	- View common threads across liked videos within liked videos playlist. Specifically, display most frequently occuring categories (categoryId) and potentially video tag frequencies.
-	- Analyze common topics of videos within user-created playlists and suggest new editions for each playlist (since there is likely some distinction in specific topics)
-- **Subscriptions** - who the user has subscribed to, number of items total from creator + number of new uploads since the user last checked
-	- Subscription recommendation engine: suggest who to unsubscribe from if you haven't watched them in a long time or their channel is inactive, suggest subscriptions based on whether you've been consuming a lot of a specific channel's content recently
-	- See how popular each channel you've subscribed to is (subscriber count, total views, video count)
+#### Current Implementation Status
+- **✅ Subscriptions Analysis**: Users can view a paginated list of their subscriptions. For each subscription on the current page, they can see the channel's title, profile picture, subscription date, and key statistics (total videos, new videos since last check, subscriber count, total views).
+- **✅ Content Affinity Analysis**: Users can analyze their "Liked Videos" playlist to see the most frequently occurring video topics and categories, providing insight into their content preferences.
+
+#### Future Development Goals
+The following features are planned for future development:
+
+- **Activities**:
+	- See which channels/creators the user has engaged with the most in a recent time period.
+	- Better understand the roots behind the videos which were recommended (e.g., "Recommended because you watched video X").
+- **Channel**:
+	- Analyze the predominant topics across all subscribed channels.
+	- Analyze overlaps between liked videos and subscriptions to provide deeper insights into content preferences.
+- **Playlists/PlaylistItems**:
+	- Extend content analysis (topics, categories, tags) to all user-created playlists, not just "Liked Videos".
+	- Provide suggestions for new videos to add to existing playlists based on their existing content.
+- **Subscriptions**:
+	- **Subscription Recommendation Engine**: Suggest channels to unsubscribe from (due to inactivity or lack of engagement) and new channels to subscribe to based on viewing habits.
 
 ### 3. Backend Resource Requests
 

@@ -1,7 +1,43 @@
+from typing import Generator, Any, Dict
+
+from django.contrib.auth.models import User
+
+from metrics.utils.api_client import YouTubeClient
+from metrics.utils.types import ApiResponse
 from metrics.utils.date_helper import isostr_to_datetime
 
-from typing import Generator, List, Tuple, Any
-from metrics.utils.types import ApiResponse
+def get_subscription_list_context(user: User, page_num: int) -> Dict[str, Any]:
+    """
+    Build context for `subscriptions_list` function in `views.py`.
+
+    Resulting context dictionary will contain dictionaries containing:
+        - subscriptions mapped to their processed data for the current page
+        - pagination context (e.g., has_next_page, next_page_number)
+    """
+    # Obtain creds from database
+    creds = user.usercredential
+    client = YouTubeClient(credentials=creds)
+
+    # Get the paginated subscription data
+    subscription_generator = client.subscriptions.stream_user_subscriptions()
+    pagination_data = get_paginated_subscriptions(
+        subscription_generator,
+        page_num=page_num,
+    )
+
+    # Get additional statistics on current page of subscriptions (25 max)
+    subs_on_page = pagination_data.get('subscriptions', {})
+    if subs_on_page:
+        channel_ids = list(subs_on_page.keys())
+        raw_channel_stats = client.channels.list(channel_ids=",".join(channel_ids))
+        processed_channel_stats = client.channels.process_raw_stats(raw_channel_stats)
+
+        # Update subscription data with channel statistics
+        for channel_id, channel_data in subs_on_page.items():
+            if channel_id in processed_channel_stats:
+                channel_data.update(processed_channel_stats[channel_id])
+
+    return pagination_data
 
 def get_paginated_subscriptions(
     subscription_generator: Generator[ApiResponse, None, None], 
