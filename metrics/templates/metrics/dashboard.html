@@ -39,6 +39,18 @@
           </div>
         </div>
       </div>
+
+      {# Look Familiar? Card #}
+      <div class="col-md-6 mb-4">
+        <div class="card h-100">
+          <div class="card-body text-center">
+            <i class="bi bi-lightbulb-fill fs-1 text-danger"></i>
+            <h5 class="card-title mt-3 text-danger">Look Familiar?</h5>
+            <p class="card-text">Explore videos recommended to you based on your activity.</p>
+            <a href="{% url 'recommended_videos' %}" class="btn btn-primary mt-auto">See Recommended Videos</a>
+          </div>
+        </div>
+      </div>
     </div>
 </div>
 {% endblock %}

@@ -1,0 +1,28 @@
+{% extends "metrics/base.html" %}
+{% load static %}
+
+{% block title %}Recommended Videos - MyTube Metrics{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="text-center my-5">
+        <h1 class="display-5">Recommended Videos</h1>
+        <p class="lead text-muted">Explore videos recommended to you based on your activity.</p>
+    </div>
+
+    <div id="recommended-videos-container" class="row">
+        <!-- Recommended video cards will be loaded here -->
+    </div>
+
+    <div id="loading-spinner" class="text-center my-4" style="display: none;">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<!-- Link to the external script for infinite scrolling -->
+<script src="{% static 'metrics/activities.js' %}"></script>
+{% endblock %}

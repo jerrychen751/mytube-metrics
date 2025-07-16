@@ -8,6 +8,7 @@ urlpatterns = [
     path('logout/', views.user_logout, name='logout'),
     path('subscriptions/', views.subscriptions_list, name='subscriptions_list'),
     path('content_affinity/', views.content_affinity, name='content_affinity'),
+    path('recommended-videos/', views.recommended_videos, name='recommended_videos'),
 ]
 
 # use `name` argument to avoid hardcoding (change URL path w/o changing references throughout code)

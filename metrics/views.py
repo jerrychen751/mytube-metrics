@@ -108,3 +108,8 @@ def content_affinity(request):
 def user_logout(request):
     logout(request)
     return redirect('login')
+
+# --- Recommended Videos Page (recommended-videos/) ---
+@login_required
+def recommended_videos(request):
+    return render(request, 'metrics/recommended_videos.html')

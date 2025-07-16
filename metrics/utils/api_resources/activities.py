@@ -1,7 +1,5 @@
 from typing import Any, Optional, Generator, Dict
 
-from requests.exceptions import HTTPError
-
 from metrics.utils.types import ApiResponse
 from metrics.utils.date_helper import is_valid_datetime_range
 
