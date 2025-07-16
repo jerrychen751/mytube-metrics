@@ -4,14 +4,13 @@ Responsible for analyzing user content affinity, such as:
     - Analyzing the reasoning YouTube uses to recommend videos on home page.
 """
 
-from typing import Dict, Any, Optional
+from typing import Dict, Any
 from collections import Counter
 
-from metrics.utils.api_client import YouTubeClient
-from metrics.utils.types import ApiResponse
-from metrics.utils.topic_helper import parse_topic_urls
-
 from django.contrib.auth.models import User
+
+from metrics.utils.api_client import YouTubeClient
+from metrics.utils.topic_helper import parse_topic_urls
 
 def get_content_affinity_context(user: User) -> Dict[str, Any]:
     """
@@ -29,13 +28,17 @@ def get_content_affinity_context(user: User) -> Dict[str, Any]:
     # Initialize context dictionary
     context = {}
 
-    # Determine topic frequencies
     liked_videos_playlist_id = client.channels.get_liked_playlist_id()
     if liked_videos_playlist_id:
+        # Determine topic frequencies
         topic_freqs = get_topic_freqs_in_playlist(client, liked_videos_playlist_id)
         context["topic_freqs"] = topic_freqs
 
-    # 
+        # Determine video category frequencies
+        category_freqs = get_category_freqs_in_playlist(client, liked_videos_playlist_id)
+        context["category_freqs"] = category_freqs
+
+    return context 
 
 
 def get_topic_freqs_in_playlist(client: YouTubeClient, playlist_id: str) -> Dict[str, int]:
@@ -79,4 +82,66 @@ def get_topic_freqs_in_playlist(client: YouTubeClient, playlist_id: str) -> Dict
 
     return dict(topic_frequencies)
 
+def get_category_freqs_in_playlist(client: YouTubeClient, playlist_id: str) -> Dict[str, int]:
+    """
+    Take a playlist ID and obtain the frequency of video categories within that playlist.
+
+    Args:
+        client (YouTubeClient): The YouTubeClient instance for making API requests.
+        playlist_id (str): The ID of the playlist to analyze.
+
+    Returns:
+        A dictionary with category names as keys and their frequency count as values.
+    """
+    all_playlistitems = client.playlist_items.list_all(playlist_id)
+    video_ids = []
+    for api_response in all_playlistitems.values():
+        items = api_response.get('items', [])
+        for item in items:
+            video_id = item.get('contentDetails', {}).get('videoId')
+            if video_id:
+                video_ids.append(video_id)
+
+    if not video_ids:
+        return {}
+
+    category_ids = []
+    chunk_size = 50  # Max number of video IDs per API call
+
+    for i in range(0, len(video_ids), chunk_size):
+        video_id_chunk = video_ids[i:i + chunk_size]
+        video_ids_str = ",".join(video_id_chunk)
+        
+        video_responses = client.videos.list_video(part="snippet", video_ids=video_ids_str, max_results=chunk_size)
+        
+        if video_responses and 'items' in video_responses:
+            for video_item in video_responses['items']:
+                category_id = video_item.get('snippet', {}).get('categoryId')
+                if category_id:
+                    category_ids.append(category_id)
+
+    if not category_ids:
+        return {}
+
+    # Match category ID to the category title
+    unique_category_ids = list(set(category_ids))
+    category_id_str = ",".join(unique_category_ids)
     
+    category_responses = client.videos.list_video_category(part="snippet", category_ids=category_id_str)
+    
+    category_id_to_name = {}
+    if category_responses and 'items' in category_responses:
+        for category_item in category_responses['items']:
+            cat_id = category_item.get('id')
+            cat_name = category_item.get('snippet', {}).get('title')
+            if cat_id and cat_name:
+                category_id_to_name[cat_id] = cat_name
+
+    # Count the frequency of each category name
+    category_frequencies = Counter()
+    for cat_id in category_ids:
+        if cat_id in category_id_to_name:
+            category_frequencies.update([category_id_to_name[cat_id]])
+
+    return dict(category_frequencies)
+
