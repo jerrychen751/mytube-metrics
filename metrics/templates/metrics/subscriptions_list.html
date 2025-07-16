@@ -1,73 +1,69 @@
 {% extends "metrics/base.html" %}
+{% load static humanize %}
 
 {% block title %}My Subscriptions - MyTube Metrics{% endblock %}
 
 {% block content %}
 <div class="container">
-    <h1 class="mb-4">My Subscriptions</h1>
+    <div class="text-center my-5">
+        <h1 class="display-5">My Subscriptions</h1>
+        <p class="lead text-muted">Explore and analyze the channels you follow.</p>
+    </div>
 
     {% if subscriptions %}
-    <div class="list-group">
         {% for sub in subscriptions.values %}
-        <div class="list-group-item mb-3 shadow-sm">
-            <div class="d-flex align-items-end" data-bs-toggle="collapse" href="#sub-details-{{ forloop.counter }}" role="button" aria-expanded="false" aria-controls="sub-details-{{ forloop.counter }}">
-                <div class="d-flex align-items-center flex-grow-1">
-                    <a href="https://www.youtube.com/channel/{{ sub.channel_id }}" target="_blank" rel="noopener noreferrer">
-                        <img src="{{ sub.profile_picture_url }}" alt="{{ sub.channel_title }} thumbnail" class="rounded-circle me-4" width="60" height="60">
-                    </a>
-                    <div class="flex-grow-1">
-                        <h5 class="mb-1">{{ sub.channel_title }}</h5>
-                        <small class="text-muted">
-                            Total videos: {{ sub.total_item_count }}
-                            {% if sub.new_item_count > 0 %}
-                                | <span style="width: 8px; height: 8px; display: inline-block; margin-right: 2px;" class="bg-danger border border-light rounded-circle"></span> New Video(s) Available
-                            {% endif %}
-                        </small>
+        <div class="card mb-3">
+            <div class="card-header" data-bs-toggle="collapse" href="#sub-details-{{ forloop.counter }}" role="button" aria-expanded="false" aria-controls="sub-details-{{ forloop.counter }}" style="cursor: pointer;">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center">
+                        <a href="https://www.youtube.com/channel/{{ sub.channel_id }}" target="_blank" rel="noopener noreferrer">
+                            <img src="{{ sub.profile_picture_url }}" alt="{{ sub.channel_title }} thumbnail" class="rounded-circle me-3" width="50" height="50">
+                        </a>
+                        <div>
+                            <h5 class="mb-0">{{ sub.channel_title }}</h5>
+                            <small class="text-muted">
+                                Subscribed: {{ sub.published_at|date:"M d, Y" }}
+                                {% if sub.new_item_count > 0 %}
+                                    | <span style="width: 8px; height: 8px; display: inline-block; margin-right: 2px;" class="bg-danger border border-light rounded-circle"></span> New Video(s) Available
+                                {% endif %}
+                            </small>
+                        </div>
                     </div>
-                </div>
-                <div class="p-2">
-                    {% if sub.published_at %}
-                    <small class="text-muted">Subscribed: {{ sub.published_at|date:"m/d/Y" }}</small>
-                    {% endif %}
+                    <i class="bi bi-chevron-down"></i>
                 </div>
             </div>
-            <div class="collapse mt-3" id="sub-details-{{ forloop.counter }}">
-                {% load humanize %}
+            <div class="collapse" id="sub-details-{{ forloop.counter }}">
                 <div class="card-body">
                     {% if sub.channel_description %}
                         <div class="description-wrapper">
-                            <p class="card-text description-text collapsed">{{ sub.channel_description }}</p>
+                            <p class="card-text description-text collapsed">{{ sub.channel_description|linebreaksbr }}</p>
                             <a href="#" class="btn btn-link btn-sm p-0 read-more-btn" style="display: none;">Read more</a>
                         </div>
                         <hr>
-                    {% else %}
-                        <p class="card-text fst-italic">✨✨Nothing to see here✨✨</p>
-                        <hr>
                     {% endif %}
-                    <p class="mb-1"><strong>Channel Stats:</strong></p>
-                    <ul class="list-unstyled">
-                        <li>Subscriber Count: {{ sub.subscriber_count|default:"N/A"|intcomma }}</li>
-                        <li>View Count: {{ sub.view_count|default:"N/A"|intcomma }}</li>
-                        <li>Total Videos: {{ sub.video_count|default:"N/A"|intcomma }}</li>
-                        {% if sub.topics %}
-                        <li>
-                            <strong class="mt-3 d-block">Frequently-Occurring Topics:</strong>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <ul class="list-unstyled">
+                                <li><strong>Subscribers:</strong> {{ sub.subscriber_count|default:"N/A"|intcomma }}</li>
+                                <li><strong>Total Views:</strong> {{ sub.view_count|default:"N/A"|intcomma }}</li>
+                                <li><strong>Total Videos:</strong> {{ sub.video_count|default:"N/A"|intcomma }}</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            {% if sub.topics %}
+                            <p class="mb-1"><strong>Frequently-Occurring Topics:</strong></p>
                             <ul class="list-inline">
                                 {% for topic in sub.topics %}
-                                <li class="list-inline-item"><span class="badge bg-primary">{{ topic }}</span></li>
+                                <li class="list-inline-item"><span class="badge bg-primary rounded-pill fw-normal">{{ topic }}</span></li>
                                 {% endfor %}
                             </ul>
-                        </li>
-                        {% endif %}
-                    </ul>
-                    {% if sub.channel_publication_date %}
-                    <small class="text-muted">Channel created on: {{ sub.channel_publication_date|date:"m/d/Y" }}</small>
-                    {% endif %}
+                            {% endif %}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
         {% endfor %}
-    </div>
     {% else %}
     <div class="alert alert-info" role="alert">
         Could not find any subscriptions or there was an error fetching them. Try logging in again.
@@ -78,95 +74,21 @@
     <nav aria-label="Page navigation">
         <ul class="pagination justify-content-center mt-4">
             {% if has_previous_page %}
-            <li class="page-item">
-                <a class="page-link" href="?page={{ previous_page_number }}">Previous</a>
-            </li>
+            <li class="page-item"><a class="page-link" href="?page={{ previous_page_number }}">Previous</a></li>
             {% else %}
-            <li class="page-item disabled">
-                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
-            </li>
+            <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a></li>
             {% endif %}
 
             {% if has_next_page %}
-            <li class="page-item">
-                <a class="page-link" href="?page={{ next_page_number }}">Next</a>
-            </li>
+            <li class="page-item"><a class="page-link" href="?page={{ next_page_number }}">Next</a></li>
             {% else %}
-            <li class="page-item disabled">
-                <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Next</a>
-            </li>
+            <li class="page-item disabled"><a class="page-link" href="#" tabindex="-1" aria-disabled="true">Next</a></li>
             {% endif %}
         </ul>
     </nav>
-
-    <a href="{% url 'dashboard' %}" class="btn btn-secondary mt-4">Back to Dashboard</a>
 </div>
 {% endblock %}
 
 {% block extra_scripts %}
-<style>
-.description-text.collapsed {
-    max-height: 5.5em; /* Approx 3 lines */
-    overflow: hidden;
-    position: relative;
-    margin-bottom: 0;
-}
-.description-text.collapsed::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    height: 2em;
-    background: linear-gradient(to bottom, rgba(255,255,255,0), white);
-}
-.read-more-btn {
-    display: block;
-    margin-top: 0.5rem;
-}
-</style>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    var collapseElements = document.querySelectorAll('.collapse');
-
-    collapseElements.forEach(function(collapseEl) {
-        // When a collapse element is shown
-        collapseEl.addEventListener('show.bs.collapse', function () {
-            setTimeout(() => {
-                var wrapper = this.querySelector('.description-wrapper');
-                if (!wrapper) return;
-
-                var text = wrapper.querySelector('.description-text');
-                var btn = wrapper.querySelector('.read-more-btn');
-
-                // Check if the text is overflowing now that it's visible
-                if (text.scrollHeight > text.clientHeight) {
-                    btn.style.display = 'block';
-                } else {
-                    text.classList.remove('collapsed');
-                }
-
-                btn.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    text.classList.remove('collapsed');
-                    btn.style.display = 'none';
-                }, { once: true }); // Use { once: true } to avoid attaching multiple listeners
-            }, 100);
-        });
-
-        // When a collapse element is hidden
-        collapseEl.addEventListener('hidden.bs.collapse', function () {
-            var wrapper = this.querySelector('.description-wrapper');
-            if (!wrapper) return;
-
-            var text = wrapper.querySelector('.description-text');
-            var btn = wrapper.querySelector('.read-more-btn');
-
-            // Reset the state
-            text.classList.add('collapsed');
-            btn.style.display = 'none';
-        });
-    });
-});
-</script>
+<script src="{% static 'metrics/subscriptions.js' %}"></script>
 {% endblock %}

@@ -1,56 +1,76 @@
 {% load static %}
 <!doctype html>
-<html lang="en">
-  <head>
+<html lang="en" class="h-100">
+<head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}MyTube Metrics{% endblock %}</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Bootstrap and Custom CSS -->
     <link href="{% static 'metrics/bootstrap.min.css' %}" rel="stylesheet">
-    <style>
-      body {
-        background-color: #f8f9fa;
-      }
-      .navbar {
-        margin-bottom: 2rem;
-      }
-      [data-bs-toggle="collapse"]:hover {
-        cursor: pointer;
-      }
-    </style>
-  </head>
-  <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-      <div class="container-fluid px-3">
-        <div class="d-flex align-items-center">
-          {% if user.is_authenticated and user.usercredential.profile_picture_url %}
-            <img src="{{ user.usercredential.profile_picture_url }}" alt="Profile Picture" class="rounded-circle me-2" width="30" height="30" style="vertical-align: middle;">
-          {% endif %}
-          <a class="navbar-brand" href="{% url 'dashboard' %}">MyTube Metrics</a>
+    <link href="{% static 'metrics/custom.css' %}" rel="stylesheet">
+</head>
+<body class="d-flex flex-column h-100">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold d-flex align-items-center" href="{% url 'dashboard' %}">
+                {% if user.is_authenticated and user.usercredential.profile_picture_url %}
+                    <img src="{{ user.usercredential.profile_picture_url }}" alt="Profile Picture" class="rounded-circle me-2" width="30" height="30">
+                {% else %}
+                    <img src="https://www.youtube.com/s/desktop/d34dbb99/img/favicon_32x32.png" alt="Logo" width="30" height="30" class="me-2">
+                {% endif %}
+                MyTube Metrics
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto align-items-center">
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'subscriptions_list' %}">Subscriptions</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'content_affinity' %}">Content Affinity</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                {% if user.usercredential.profile_picture_url %}
+                                    <img src="{{ user.usercredential.profile_picture_url }}" alt="Profile Picture" class="rounded-circle" width="30" height="30">
+                                {% else %}
+                                    {{ user.username }}
+                                {% endif %}
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="{% url 'logout' %}">Logout</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'login' %}">Login</a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </div>
         </div>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-          <ul class="navbar-nav ms-auto">
-            {% if user.is_authenticated %}
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'logout' %}">Logout</a>
-              </li>
-            {% else %}
-              <li class="nav-item">
-                <a class="nav-link" href="{% url 'login' %}">Login</a>
-              </li>
-            {% endif %}
-          </ul>
-        </div>
-      </div>
     </nav>
 
-    <main class="container">
-      {% block content %}{% endblock %}
+    <main class="container mt-4">
+        {% block content %}{% endblock %}
     </main>
+
+    <footer class="footer mt-auto py-3 bg-dark">
+        <div class="container text-center">
+            <span class="text-muted">MyTube Metrics | Analyze Your YouTube Habits</span>
+        </div>
+    </footer>
 
     <script src="{% static 'metrics/bootstrap.bundle.min.js' %}"></script>
     {% block extra_scripts %}{% endblock %}
-  </body>
+</body>
 </html>

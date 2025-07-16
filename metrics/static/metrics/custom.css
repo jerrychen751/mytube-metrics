@@ -1,0 +1,77 @@
+/*
+ * Custom CSS for MyTube Metrics
+ */
+
+:root {
+    --primary-color: #d9534f; /* Muted Red */
+    --secondary-color: #282828; /* Dark Gray */
+    --background-color: #f7f7f7; /* Lighter Gray */
+    --card-background: #ffffff;
+    --text-color: #333333;
+    --light-text-color: #ffffff;
+    --border-radius: 8px;
+    --box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+.navbar {
+    box-shadow: var(--box-shadow);
+}
+
+.card {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.15);
+}
+
+.card-title {
+    color: var(--primary-color);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: #c9302c;
+    border-color: #c9302c;
+}
+
+.footer {
+    background-color: var(--secondary-color);
+    color: var(--light-text-color);
+    padding: 2rem 0;
+    margin-top: 4rem;
+}
+
+.description-text.collapsed {
+    max-height: 5.5em; /* Approx 3 lines */
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 0;
+}
+.description-text.collapsed::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 2em;
+    background: linear-gradient(to bottom, rgba(255,255,255,0), white);
+}
+.read-more-btn {
+    display: block;
+    margin-top: 0.5rem;
+}
