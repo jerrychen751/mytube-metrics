@@ -60,7 +60,8 @@ class Subscriptions:
         )
 
     def stream_user_subscriptions(self, part: str = "id,snippet,contentDetails", 
-                                      order: str = "alphabetical") -> Generator[ApiResponse, None, None]:
+                                      order: str = "alphabetical"
+                                      ) -> Generator[ApiResponse, None, None]:
         """
         Generator to list all of the authenticated user's subscription data.
 
