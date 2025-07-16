@@ -80,7 +80,7 @@ class Channels:
                 "channel_name": snippet.get('title', ""),
                 "channel_description": snippet.get('description', ""),
                 "channel_publication_date": isostr_to_datetime(snippet.get('publishedAt', None)),
-                "channel_pfp_url": snippet.get('default', {}).get('url', ""),
+                "channel_pfp_url": snippet.get('thumbnails', {}).get('default', {}).get('url', ""),
                 "liked_videos_playlist_id": content_details.get('relatedPlaylists', {}).get('likes', ""),
                 "uploads_playlist_id": content_details.get('relatedPlaylists', {}).get('uploads', ""),
                 "view_count": statistics.get('viewCount', 0),
@@ -101,12 +101,17 @@ class Channels:
         This is a convenience method that calls the `channels.list` endpoint with `mine=true` and extracts the `likes` playlist ID from the `contentDetails` part of the response.
 
         Returns:
-            str: The playlist ID for the user's liked videos.
-
-        Raises:
-            KeyError: If the playlist ID cannot be found in the API response.
-            ValueError: If the API response is invalid or missing necessary items.
+            str: The playlist ID for the user's liked videos, or an empty string if not found.
         """
-        raw_channel_data = self.list(mine=True)
-        processed_channel_data = self.process_raw_stats(raw_channel_data)
-        return processed_channel_data["liked_videos_playlist_id"]
+        # Request both snippet and contentDetails to ensure all data is available
+        raw_channel_data = self.list(part="snippet,contentDetails", mine=True)
+        if not raw_channel_data or 'items' not in raw_channel_data or not raw_channel_data['items']:
+            return ""
+
+        # The 'mine=true' request returns the user's channel info
+        first_channel_item = raw_channel_data['items'][0]
+        
+        # Extract the playlist ID directly from the raw response
+        liked_playlist_id = first_channel_item.get('contentDetails', {}).get('relatedPlaylists', {}).get('likes', "")
+        
+        return liked_playlist_id
