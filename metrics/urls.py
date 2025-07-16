@@ -9,6 +9,7 @@ urlpatterns = [
     path('subscriptions/', views.subscriptions_list, name='subscriptions_list'),
     path('content_affinity/', views.content_affinity, name='content_affinity'),
     path('recommended-videos/', views.recommended_videos, name='recommended_videos'),
+    path('recommended-videos/ajax/', views.get_recommended_videos_ajax, name='get_recommended_videos_ajax'),
 ]
 
 # use `name` argument to avoid hardcoding (change URL path w/o changing references throughout code)
