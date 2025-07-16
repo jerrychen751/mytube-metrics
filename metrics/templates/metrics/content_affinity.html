@@ -11,11 +11,14 @@
     <div class="row">
         <div class="col-lg-6 mb-4">
             <div class="card h-100">
-                <div class="card-body">
+                <div class="card-body d-flex flex-column">
                     {% if topic_freq_chart_dict %}
-                        <div id="topicFreqChart" style="width:100%; min-height: 400px;"></div>
+                        <div class="chart-container-collapsible" id="topicChartContainer">
+                            <div id="topicFreqChart"></div>
+                        </div>
+                        <button id="expandTopicChartBtn" class="btn btn-secondary btn-sm mt-2">Show More</button>
                     {% else %}
-                        <div class="text-center">
+                        <div class="text-center my-auto">
                             <h5 class="card-title">Topic Frequencies</h5>
                             <p>Could not retrieve topic frequency data.</p>
                         </div>

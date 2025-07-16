@@ -59,7 +59,7 @@ def get_content_affinity_context(user: User) -> Dict[str, Any]:
 
     return context
 
-def create_plotly_chart_dict(freq_data: Dict[str, int], data_name: str, chart_type: str) -> Dict:
+def create_plotly_chart_dict(freq_data: Dict[str, int], data_name: str, chart_type: str) -> Dict[str, Any]:
     """
     Creates a JSON-serializable dictionary of a Plotly chart for frequency data.
 
@@ -85,10 +85,11 @@ def create_plotly_chart_dict(freq_data: Dict[str, int], data_name: str, chart_ty
             margin=dict(l=150) # Add left margin to prevent labels from being cut off
         )
     elif chart_type == 'donut':
+        legend_title = "Categories" if data_name == "Category" else data_name + 's'
         fig = go.Figure(data=[go.Pie(labels=labels, values=values, hole=.4)])
         fig.update_layout(
             title_text=f'{data_name} Distribution',
-            legend_title_text=data_name+'s'
+            legend_title_text=legend_title
         )
     else:
         fig = go.Figure() # Return an empty figure if chart_type is invalid
