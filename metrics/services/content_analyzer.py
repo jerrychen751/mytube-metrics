@@ -81,8 +81,9 @@ def create_plotly_chart_dict(freq_data: Dict[str, int], data_name: str, chart_ty
         fig.update_layout(
             title_text=f'{data_name} Frequencies',
             xaxis_title="Frequency",
-            yaxis_title=data_name,
-            margin=dict(l=150) # Add left margin to prevent labels from being cut off
+            yaxis=dict(tickmode='array', tickvals=labels, ticktext=labels),
+            margin=dict(l=150), # Add left margin to prevent labels from being cut off
+            height=max(400, len(labels) * 25) # Dynamically adjust height
         )
     elif chart_type == 'donut':
         legend_title = "Categories" if data_name == "Category" else data_name + 's'
