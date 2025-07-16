@@ -1,0 +1,61 @@
+{% extends 'metrics/base.html' %}
+{% load static %}
+
+{% block title %}Viewing Evolution - MyTube Metrics{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Analyze Your Viewing Evolution</h1>
+    <p>This page will display insights into how your YouTube viewing habits have evolved over time.</p>
+
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Viewing Trends Over Time</h5>
+            <div id="viewingEvolutionChart" style="height: 400px;"></div>
+            <p class="card-text text-muted">Data will be loaded here to show your viewing trends.</p>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Top Channels by Watch Time</h5>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item text-muted">Top channels by watch time will appear here.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Placeholder for JavaScript to render charts
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('viewingEvolutionChart');
+        if (ctx) {
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: [], // Dates
+                    datasets: [{
+                        label: 'Videos Watched',
+                        data: [], // Number of videos
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

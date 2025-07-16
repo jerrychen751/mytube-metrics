@@ -105,7 +105,6 @@ def content_affinity(request):
         return redirect('login')
 
 # --- Logout Page (logout/) ---
-
 def user_logout(request):
     logout(request)
     return redirect('login')
@@ -123,6 +122,15 @@ def get_recommended_videos_ajax(request):
         from .services.activity_analyzer import get_recommended_activities_context
         context = get_recommended_activities_context(request.user, page_token=page_token)
         return JsonResponse(context)
+    except RefreshError:
+        logout(request)
+        return redirect('login')
+    
+# --- Viewing Habit Evolution (viewing-evolution/) ---
+@login_required
+def viewing_evolution(request):
+    try:
+        return render(request, 'metrics/viewing_evolution.html')
     except RefreshError:
         logout(request)
         return redirect('login')

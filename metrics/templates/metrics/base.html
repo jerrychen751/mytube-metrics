@@ -36,7 +36,16 @@
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'content_affinity' %}">Content Affinity</a>
                         </li>
-                        <li class="nav-item dropdown">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'recommended_videos' %}">Recommended Videos</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'viewing_evolution' %}">Analyze Evolution</a>
+                        </li>
+                        <li class="nav-item d-lg-none">
+                            <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                        </li>
+                        <li class="nav-item dropdown d-none d-lg-block">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 {% if user.usercredential.profile_picture_url %}
                                     <img src="{{ user.usercredential.profile_picture_url }}" alt="Profile Picture" class="rounded-circle" width="30" height="30">
