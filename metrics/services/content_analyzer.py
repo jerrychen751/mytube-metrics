@@ -6,14 +6,14 @@ Responsible for analyzing user content affinity, such as:
 
 from typing import Dict, Any
 from collections import Counter
-import json
 import plotly.graph_objects as go
-import plotly.io as pio
 
 from django.contrib.auth.models import User
 
 from metrics.utils.api_client import YouTubeClient
+from metrics.utils.types import ApiResponse
 from metrics.utils.topic_helper import parse_topic_urls
+from metrics.utils.date_helper import isostr_to_datetime
 
 def get_content_affinity_context(user: User) -> Dict[str, Any]:
     """
@@ -25,8 +25,6 @@ def get_content_affinity_context(user: User) -> Dict[str, Any]:
     The resulting context dictionary contains:
         - 'topic_freqs': A dictionary mapping topic names to their frequency.
         - 'category_freqs': A dictionary mapping category names to their frequency.
-
-    Future implementation will also include analysis of recommended videos.
     """
     # Obtain creds from database
     creds = user.usercredential
@@ -56,6 +54,8 @@ def get_content_affinity_context(user: User) -> Dict[str, Any]:
                 data_name="Category",
                 chart_type='donut'
             )
+
+        # 
 
     return context
 

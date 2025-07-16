@@ -5,7 +5,7 @@ from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import AuthorizedSession
 
 from metrics.models import UserCredential
-from .api_resources import Channels, Playlists, Subscriptions, Videos, PlaylistItems
+from .api_resources import Channels, Playlists, Subscriptions, Videos, PlaylistItems, Activities
 
 from .types import ApiResponse
 from typing import Any
@@ -45,6 +45,7 @@ class YouTubeClient:
         self.subscriptions = Subscriptions(self)
         self.videos = Videos(self)
         self.playlist_items = PlaylistItems(self)
+        self.activities = Activities(self)
         
     def _make_request(self, endpoint_path: str, params: dict[str, str], use_oauth: bool = False) -> ApiResponse | None:
         """

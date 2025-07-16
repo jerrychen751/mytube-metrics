@@ -3,6 +3,7 @@ from .playlists import Playlists
 from .subscriptions import Subscriptions
 from .videos import Videos
 from .playlistitems import PlaylistItems
+from .activities import Activities
 
 __all__ = [
     "Channels",
@@ -10,4 +11,5 @@ __all__ = [
     "Subscriptions",
     "Videos",
     "PlaylistItems",
+    "Activities",
 ]
