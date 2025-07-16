@@ -2,7 +2,61 @@
 
 {% block content %}
 <div class="container mt-4">
-    <h1>Content Affinity Analysis</h1>
-    <p>This page will display content affinity analysis.</p>
+    <div class="text-center my-5">
+        <h1 class="display-5">Content Affinity</h1>
+        <p class="lead text-muted">Insights into the topics and categories you engage with most in your "Liked Videos" playlist.</p>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    {% if topic_freq_chart_json %}
+                        <div id="topicFreqChart" style="width:100%;height:100%;"></div>
+                    {% else %}
+                        <div class="text-center">
+                            <h5 class="card-title">Topic Frequencies</h5>
+                            <p>Could not retrieve topic frequency data.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6 mb-4">
+            <div class="card h-100">
+                <div class="card-body">
+                    {% if category_freq_chart_json %}
+                        <div id="categoryFreqChart" style="width:100%;height:100%;"></div>
+                    {% else %}
+                        <div class="text-center">
+                            <h5 class="card-title">Category Distribution</h5>
+                            <p>Could not retrieve category frequency data.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+{% endblock %}
+
+{% block extra_scripts %}
+<!-- Plotly.js -->
+<script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const topicChartJson = {{ topic_freq_chart_json|safe|default:'null' }};
+        if (topicChartJson) {
+            const topicFigure = JSON.parse(JSON.stringify(topicChartJson));
+            Plotly.newPlot('topicFreqChart', topicFigure.data, topicFigure.layout, {responsive: true});
+        }
+
+        const categoryChartJson = {{ category_freq_chart_json|safe|default:'null' }};
+        if (categoryChartJson) {
+            const categoryFigure = JSON.parse(JSON.stringify(categoryChartJson));
+            Plotly.newPlot('categoryFreqChart', categoryFigure.data, categoryFigure.layout, {responsive: true});
+        }
+    });
+</script>
 {% endblock %}

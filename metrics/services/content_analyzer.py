@@ -6,6 +6,9 @@ Responsible for analyzing user content affinity, such as:
 
 from typing import Dict, Any
 from collections import Counter
+import json
+import plotly.graph_objects as go
+import plotly.io as pio
 
 from django.contrib.auth.models import User
 
@@ -34,15 +37,63 @@ def get_content_affinity_context(user: User) -> Dict[str, Any]:
 
     liked_videos_playlist_id = client.channels.get_liked_playlist_id()
     if liked_videos_playlist_id:
-        # Determine topic frequencies
+        # Determine topic frequencies and create bar chart
         topic_freqs = get_topic_freqs_in_playlist(client, liked_videos_playlist_id)
-        context["topic_freqs"] = topic_freqs
+        if topic_freqs:
+            context["topic_freqs"] = topic_freqs
+            context["topic_freq_chart_json"] = create_plotly_chart_json(
+                freq_data=topic_freqs,
+                data_name="Topic",
+                chart_type='bar'
+            )
 
-        # Determine video category frequencies
+        # Determine video category frequencies and create donut chart
         category_freqs = get_category_freqs_in_playlist(client, liked_videos_playlist_id)
-        context["category_freqs"] = category_freqs
+        if category_freqs:
+            context["category_freqs"] = category_freqs
+            context["category_freq_chart_json"] = create_plotly_chart_json(
+                freq_data=category_freqs,
+                data_name="Category",
+                chart_type='donut'
+            )
 
-    return context 
+    return context
+
+def create_plotly_chart_json(freq_data: Dict[str, int], data_name: str, chart_type: str) -> str:
+    """
+    Creates a JSON representation of a Plotly chart for frequency data.
+
+    Args:
+        freq_data: A dictionary with item names as keys and their frequencies as values.
+        data_name: The name of the data being plotted (e.g., "Topic", "Category").
+        chart_type: The type of chart to generate ('bar' or 'donut').
+
+    Returns:
+        A JSON string representing the Plotly figure.
+    """
+    # Sort data so the highest frequency is at the top of the chart
+    sorted_items = sorted(freq_data.items(), key=lambda x: x[1])
+    labels = [item[0] for item in sorted_items]
+    values = [item[1] for item in sorted_items]
+
+    if chart_type == 'bar':
+        fig = go.Figure(data=[go.Bar(x=values, y=labels, orientation='h')])
+        fig.update_layout(
+            title_text=f'{data_name} Frequencies',
+            xaxis_title="Frequency",
+            yaxis_title=data_name,
+            margin=dict(l=150) # Add left margin to prevent labels from being cut off
+        )
+    elif chart_type == 'donut':
+        fig = go.Figure(data=[go.Pie(labels=labels, values=values, hole=.4)])
+        fig.update_layout(
+            title_text=f'{data_name} Distribution',
+            legend_title_text=data_name+'s'
+        )
+    else:
+        return ""
+
+    return pio.to_json(fig)
 
 
 def get_topic_freqs_in_playlist(client: YouTubeClient, playlist_id: str) -> Dict[str, int]:
