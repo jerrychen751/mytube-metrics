@@ -41,7 +41,7 @@ def get_content_affinity_context(user: User) -> Dict[str, Any]:
         topic_freqs = get_topic_freqs_in_playlist(client, liked_videos_playlist_id)
         if topic_freqs:
             context["topic_freqs"] = topic_freqs
-            context["topic_freq_chart_json"] = create_plotly_chart_json(
+            context["topic_freq_chart_dict"] = create_plotly_chart_dict(
                 freq_data=topic_freqs,
                 data_name="Topic",
                 chart_type='bar'
@@ -51,7 +51,7 @@ def get_content_affinity_context(user: User) -> Dict[str, Any]:
         category_freqs = get_category_freqs_in_playlist(client, liked_videos_playlist_id)
         if category_freqs:
             context["category_freqs"] = category_freqs
-            context["category_freq_chart_json"] = create_plotly_chart_json(
+            context["category_freq_chart_dict"] = create_plotly_chart_dict(
                 freq_data=category_freqs,
                 data_name="Category",
                 chart_type='donut'
@@ -59,9 +59,9 @@ def get_content_affinity_context(user: User) -> Dict[str, Any]:
 
     return context
 
-def create_plotly_chart_json(freq_data: Dict[str, int], data_name: str, chart_type: str) -> str:
+def create_plotly_chart_dict(freq_data: Dict[str, int], data_name: str, chart_type: str) -> Dict:
     """
-    Creates a JSON representation of a Plotly chart for frequency data.
+    Creates a JSON-serializable dictionary of a Plotly chart for frequency data.
 
     Args:
         freq_data: A dictionary with item names as keys and their frequencies as values.
@@ -69,7 +69,7 @@ def create_plotly_chart_json(freq_data: Dict[str, int], data_name: str, chart_ty
         chart_type: The type of chart to generate ('bar' or 'donut').
 
     Returns:
-        A JSON string representing the Plotly figure.
+        A dictionary representing the Plotly figure, ready for JSON serialization.
     """
     # Sort data so the highest frequency is at the top of the chart
     sorted_items = sorted(freq_data.items(), key=lambda x: x[1])
@@ -91,9 +91,9 @@ def create_plotly_chart_json(freq_data: Dict[str, int], data_name: str, chart_ty
             legend_title_text=data_name+'s'
         )
     else:
-        return ""
+        fig = go.Figure() # Return an empty figure if chart_type is invalid
 
-    return pio.to_json(fig)
+    return fig.to_dict()
 
 
 def get_topic_freqs_in_playlist(client: YouTubeClient, playlist_id: str) -> Dict[str, int]:

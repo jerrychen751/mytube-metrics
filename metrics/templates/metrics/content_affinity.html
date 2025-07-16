@@ -1,4 +1,5 @@
 {% extends 'metrics/base.html' %}
+{% load static %}
 
 {% block content %}
 <div class="container mt-4">
@@ -11,8 +12,8 @@
         <div class="col-lg-6 mb-4">
             <div class="card h-100">
                 <div class="card-body">
-                    {% if topic_freq_chart_json %}
-                        <div id="topicFreqChart" style="width:100%;height:100%;"></div>
+                    {% if topic_freq_chart_dict %}
+                        <div id="topicFreqChart" style="width:100%; min-height: 400px;"></div>
                     {% else %}
                         <div class="text-center">
                             <h5 class="card-title">Topic Frequencies</h5>
@@ -25,8 +26,8 @@
         <div class="col-lg-6 mb-4">
             <div class="card h-100">
                 <div class="card-body">
-                    {% if category_freq_chart_json %}
-                        <div id="categoryFreqChart" style="width:100%;height:100%;"></div>
+                    {% if category_freq_chart_dict %}
+                        <div id="categoryFreqChart" style="width:100%; min-height: 400px;"></div>
                     {% else %}
                         <div class="text-center">
                             <h5 class="card-title">Category Distribution</h5>
@@ -44,19 +45,10 @@
 <!-- Plotly.js -->
 <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const topicChartJson = {{ topic_freq_chart_json|safe|default:'null' }};
-        if (topicChartJson) {
-            const topicFigure = JSON.parse(JSON.stringify(topicChartJson));
-            Plotly.newPlot('topicFreqChart', topicFigure.data, topicFigure.layout, {responsive: true});
-        }
+<!-- Safely pass data to the frontend -->
+{{ topic_freq_chart_dict|json_script:"topic-chart-data" }}
+{{ category_freq_chart_dict|json_script:"category-chart-data" }}
 
-        const categoryChartJson = {{ category_freq_chart_json|safe|default:'null' }};
-        if (categoryChartJson) {
-            const categoryFigure = JSON.parse(JSON.stringify(categoryChartJson));
-            Plotly.newPlot('categoryFreqChart', categoryFigure.data, categoryFigure.layout, {responsive: true});
-        }
-    });
-</script>
+<!-- Link to the external script -->
+<script src="{% static 'metrics/content_affinity.js' %}"></script>
 {% endblock %}
