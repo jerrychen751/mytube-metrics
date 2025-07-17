@@ -76,21 +76,26 @@ The `mytube_metrics` project is organized as follows:
 │   │   ├───0003_usercredential_profile_picture_url.py
 │   │   └───__pycache__/
 │   ├───services/
+│   │   ├───activity_analyzer.py
 │   │   ├───content_analyzer.py
 │   │   ├───subscription_analyzer.py
-│   │   └───visualizer.py
+│   │   └───__pycache__/
 │   ├───templates/
 │   │   └───metrics/
 │   │       ├───base.html
 │   │       ├───content_affinity.html
 │   │       ├───dashboard.html
 │   │       ├───login.html
-│   │       └───subscriptions_list.html
+│   │       ├───recommended_videos.html
+│   │       ├───subscriptions_list.html
+│   │       └───viewing_evolution.html
 │   └───utils/
-│       ├───__pycache__/
-│       ├─��─api_client.py
+│       ├───api_client.py
 │       ├───auth_helper.py
 │       ├───date_helper.py
+│       ├───topic_helper.py
+│       ├───types.py
+│       ├───__pycache__/
 │       └───api_resources/
 │           ├───__init__.py
 │           ├───activities.py
@@ -106,6 +111,14 @@ The `mytube_metrics` project is organized as follows:
 │   ├───urls.py
 │   ├───wsgi.py
 │   └───__pycache__/
+├───static/
+│   └───metrics/
+│       ├───activities.js
+│       ├───bootstrap.bundle.min.js
+│       ├───bootstrap.min.css
+│       ├───content_affinity.js
+│       ├───custom.css
+│       └───subscriptions.js
 └───venv/
     ├───bin/...
     ├───include/...
@@ -114,14 +127,17 @@ The `mytube_metrics` project is organized as follows:
 
 -   **`metrics`**: The main Django application.
     -   **`services`**: Contains modules for analyzing and visualizing YouTube data.
+        -   **`activity_analyzer.py`**: Analyzes user activity data, including generating recommended videos and engagement evolution.
         -   **`content_analyzer.py`**: Analyzes user content affinity (e.g., liked videos).
         -   **`subscription_analyzer.py`**: Analyzes YouTube subscription data.
-        -   **`visualizer.py`**: Creates visualizations from analyzed data.
+        -   **`visualizer.py`**: Creates visualizations from analyzed data. (Note: This file was not directly modified but is part of the services directory).
     -   **`templates`**: Contains HTML templates for the web application, organized by app.
     -   **`utils`**: Contains utility functions and API resource handlers.
         -   **`api_client.py`**: A client for interacting with the YouTube Data API.
         -   **`auth_helper.py`**: Handles user authentication and authorization.
         -   **`date_helper.py`**: Provides helper functions for date and time manipulation.
+        -   **`topic_helper.py`**: (Added) Provides helper functions for processing YouTube topic URLs.
+        -   **`types.py`**: (Added) Defines custom type hints for the application.
         -   **`api_resources`**: Contains modules for interacting with specific YouTube Data API resources.
             -   **`activities.py`**: Handles YouTube Activities API requests.
             -   **`channels.py`**: Handles YouTube Channels API requests.
@@ -164,13 +180,12 @@ Users have a variety of options once they have logged into the app to check deta
 #### Current Implementation Status
 - **✅ Subscriptions Analysis**: Users can view a paginated list of their subscriptions. For each subscription on the current page, they can see the channel's title, profile picture, subscription date, and key statistics (total videos, new videos since last check, subscriber count, total views).
 - **✅ Content Affinity Analysis**: Users can analyze their "Liked Videos" playlist to see the most frequently occurring video topics and categories, providing insight into their content preferences.
+- **✅ Recommended Videos**: Users can explore popular videos based on the categories of their liked videos, with infinite scrolling.
+- **✅ Viewing Habit Evolution**: Users can analyze how their engagement (likes and subscriptions) has changed over time and see their top engaged channels.
 
 #### Future Development Goals
 The following features are planned for future development:
 
-- **Activities**:
-	- See which channels/creators the user has engaged with the most in a recent time period.
-	- Better understand the roots behind the videos which were recommended (e.g., "Recommended because you watched video X").
 - **Channel**:
 	- Analyze the predominant topics across all subscribed channels.
 	- Analyze overlaps between liked videos and subscriptions to provide deeper insights into content preferences.
@@ -219,12 +234,12 @@ When contributing to the `mytube_metrics` project, please follow these guideline
 
 The `mytube_metrics` project uses the YouTube Data API to access user data. The following API endpoints are used:
 
--   **`activities`**: Returns a list of the user's activities, such as likes, comments, and subscriptions.
+-   **`activities`**: (Deprecated for general user activity feeds) Returns a list of the user's activities, such as likes, comments, and subscriptions. **Note: This endpoint is unreliable for fetching personalized user activity due to privacy settings and deprecation of certain features (e.g., channel bulletins). It is no longer used for generating recommendations.**
 -   **`channels`**: Returns information about a specific channel.
 -   **`playlists`**: Returns a list of the user's playlists.
 -   **`playlistItems`**: Returns a list of the videos in a specific playlist.
 -   **`subscriptions`**: Returns a list of the user's subscriptions.
--   **`videos`**: Returns information about a specific video.
+-   **`videos`**: Returns information about a specific video. **Used for fetching popular videos by category for recommendations.**
 
 For more information about the YouTube Data API, please refer to the [official documentation](https://developers.google.com/youtube/v3/docs).
 
