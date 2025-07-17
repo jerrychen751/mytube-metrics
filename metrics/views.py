@@ -112,15 +112,20 @@ def user_logout(request):
 # --- Recommended Videos Page (recommended-videos/) ---
 @login_required
 def recommended_videos(request):
-    return render(request, 'metrics/recommended_videos.html')
+    try:
+
+        return render(request, 'metrics/recommended_videos.html')
+    except RefreshError:
+        logout(request)
+        return redirect('login')
 
 # --- AJAX Endpoint for Recommended Videos ---
 @login_required
 def get_recommended_videos_ajax(request):
     try:
         page_token = request.GET.get('page_token')
-        from .services.activity_analyzer import get_recommended_activities_context
-        context = get_recommended_activities_context(request.user, page_token=page_token)
+        from .services.activity_analyzer import get_recommended_videos_context
+        context = get_recommended_videos_context(request.user, page_token=page_token)
         return JsonResponse(context)
     except RefreshError:
         logout(request)

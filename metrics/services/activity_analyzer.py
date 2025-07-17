@@ -1,14 +1,15 @@
 from typing import Any, Dict, Generator, Optional
 from collections import defaultdict
-from datetime import datetime
 
 from django.contrib.auth.models import User
 
 from metrics.utils.api_client import YouTubeClient
-from metrics.utils.types import ApiResponse
 from metrics.utils.date_helper import isostr_to_datetime
 
-def get_recommended_activities_context(user: User, page_token: Optional[str] = None, max_results: int = 10) -> Dict[str, Any]:
+def get_recommended_videos_context(user: User,
+                                   page_token: Optional[str] = None,
+                                   max_results: int = 50
+                                   ) -> Dict[str, Any]:
     """
     Fetches and processes recommended video activities for the authenticated user.
 
@@ -50,6 +51,7 @@ def get_recommended_activities_context(user: User, page_token: Optional[str] = N
                     recommendation_reason = content_details.get('recommendation', {}).get('reason')
 
                     seed_video_id = None
+                    seed_video_title = None
                     seed_video_thumbnail = None
                     if seed_resource.get('kind') == 'youtube#video':
                         seed_video_id = seed_resource.get('videoId')
@@ -57,7 +59,9 @@ def get_recommended_activities_context(user: User, page_token: Optional[str] = N
                         if seed_video_id:
                             video_response = client.videos.list(video_ids=seed_video_id, part="snippet")
                             if video_response and 'items' in video_response and video_response['items']:
-                                seed_video_thumbnail = video_response['items'][0].get('snippet', {}).get('thumbnails', {}).get('default', {}).get('url')
+                                seed_video_snippet = video_response['items'][0].get('snippet', {})
+                                seed_video_thumbnail = seed_video_snippet.get('thumbnails', {}).get('default', {}).get('url')
+                                seed_video_title = seed_video_snippet.get('title')
 
                     recommended_videos.append({
                         'recommended_video_id': recommended_video_id,
@@ -65,6 +69,7 @@ def get_recommended_activities_context(user: User, page_token: Optional[str] = N
                         'recommended_video_thumbnail': recommended_video_thumbnail,
                         'recommendation_reason': recommendation_reason,
                         'seed_video_id': seed_video_id,
+                        'seed_video_title': seed_video_title,
                         'seed_video_thumbnail': seed_video_thumbnail,
                     })
     
@@ -87,7 +92,7 @@ def stream_recommended_activities(user: User) -> Generator[Dict[str, Any], None,
     """
     next_page_token: Optional[str] = None
     while True:
-        context = get_recommended_activities_context(user, page_token=next_page_token, max_results=50)
+        context = get_recommended_videos_context(user, page_token=next_page_token, max_results=50)
         
         for video in context['recommended_videos']:
             yield video
