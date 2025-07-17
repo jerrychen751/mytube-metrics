@@ -2,7 +2,7 @@
 .env
 venv/
 .venv/
-old/
+GEMINI.md
 
 # Cache
 .mypy_cache/
