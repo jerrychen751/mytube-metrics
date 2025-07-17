@@ -6,78 +6,112 @@ from django.contrib.auth.models import User
 from metrics.utils.api_client import YouTubeClient
 from metrics.utils.date_helper import isostr_to_datetime
 
-def get_recommended_videos_context(user: User,
+def get_recommended_videos_context(request: Any, 
                                    page_token: Optional[str] = None,
-                                   max_results: int = 50
+                                   max_results: int = 9, 
+                                   top_n_categories: int = 3
                                    ) -> Dict[str, Any]:
     """
-    Fetches and processes recommended video activities for the authenticated user.
+    Fetches a cyclical, proportional mix of popular videos using a session-based approach.
 
     Args:
-        user (User): The authenticated Django user object.
-        page_token (Optional[str]): The `nextPageToken` from a previous API response for pagination.
-        max_results (int): The maximum number of recommended activities to retrieve per request.
+        request (Any): The Django request object, used to access the user and session.
+        page_token (Optional[str]): A custom token encoding the next category index and its page token.
+        max_results (int): The number of videos to fetch per request.
+        top_n_categories (int): The number of top categories to cycle through.
 
     Returns:
-        Dict[str, Any]: A dictionary containing the processed recommended video data and pagination info.
-                        - 'recommended_videos': A list of dictionaries, each representing a recommended video.
-                        - 'next_page_token': The token for the next page of results, or None if no more pages.
+        Dict[str, Any]: A dictionary with recommended videos and a custom next page token.
     """
+    user = request.user
     creds = user.usercredential
     client = YouTubeClient(credentials=creds)
 
-    # Fetch activities of type 'recommendation'
-    response = client.activities.list(
-        part="snippet,contentDetails",
+    # --- Session Initialization ---
+    if 'recommendation_profile' not in request.session or not request.session['recommendation_profile']['categories']:
+        # 1. Get liked videos playlist ID
+        liked_videos_playlist_id = client.channels.get_liked_playlist_id()
+        if not liked_videos_playlist_id:
+            return {'recommended_videos': [], 'next_page_token': None}
+
+        # 2. Get category frequencies
+        from .content_analyzer import get_category_freqs_in_playlist
+        category_freqs = get_category_freqs_in_playlist(client, liked_videos_playlist_id)
+        if not category_freqs:
+            return {'recommended_videos': [], 'next_page_token': None}
+
+        # 3. Map category names to IDs
+        all_categories_response = client.videos.list_video_category(part="snippet", region_code="US")
+        category_name_to_id = {
+            item['snippet']['title']: item['id']
+            for item in all_categories_response.get('items', [])
+            if item.get('snippet', {}).get('assignable')
+        }
+
+        # 4. Store top categories and their pagination state in the session
+        sorted_categories = sorted(category_freqs.items(), key=lambda item: item[1], reverse=True)
+        top_categories = [
+            {
+                "name": name,
+                "id": category_name_to_id[name],
+                "next_page_token": "start" # Use "start" to indicate it hasn't been fetched yet
+            }
+            for name, _ in sorted_categories[:top_n_categories]
+            if name in category_name_to_id
+        ]
+        
+        request.session['recommendation_profile'] = {
+            "categories": top_categories,
+            "current_category_index": 0
+        }
+
+    # --- Fetching Logic ---
+    profile = request.session['recommendation_profile']
+    if not profile['categories']:
+        return {'recommended_videos': [], 'next_page_token': None}
+
+    # Determine which category to fetch from
+    category_index = profile['current_category_index']
+    current_category = profile['categories'][category_index]
+    
+    # Use the stored page token, which could be None (for subsequent pages) or "start"
+    page_token_for_api = current_category['next_page_token'] if current_category['next_page_token'] != "start" else None
+
+    # Fetch popular videos for the current category
+    response = client.videos.list_video(
+        part="snippet,contentDetails,statistics",
+        chart='mostPopular',
+        video_category_id=current_category['id'],
         max_results=max_results,
-        page_token=page_token,
+        page_token=page_token_for_api
     )
 
     recommended_videos = []
+    next_page_token_from_api = None
+
     if response and 'items' in response:
         for item in response['items']:
-            if item.get('snippet', {}).get('type') == 'recommendation':
-                snippet = item['snippet']
-                content_details = item['contentDetails']
+            recommended_videos.append({
+                'recommended_video_id': item.get('id'),
+                'recommended_video_title': item.get('snippet', {}).get('title'),
+                'recommended_video_thumbnail': item.get('snippet', {}).get('thumbnails', {}).get('medium', {}).get('url'),
+                'recommendation_reason': f"Popular in {current_category['name']}",
+            })
+        next_page_token_from_api = response.get('nextPageToken')
 
-                recommended_resource = content_details.get('recommendation', {}).get('resourceId', {})
-                seed_resource = content_details.get('recommendation', {}).get('seedResourceId', {})
+    # --- Update Session State for Next Call ---
+    profile['categories'][category_index]['next_page_token'] = next_page_token_from_api
+    profile['current_category_index'] = (category_index + 1) % len(profile['categories'])
+    request.session.modified = True
 
-                # Only process if the recommended resource is a video
-                if recommended_resource.get('kind') == 'youtube#video':
-                    recommended_video_id = recommended_resource.get('videoId')
-                    recommended_video_title = snippet.get('title')
-                    recommended_video_thumbnail = snippet.get('thumbnails', {}).get('medium', {}).get('url')
-                    recommendation_reason = content_details.get('recommendation', {}).get('reason')
-
-                    seed_video_id = None
-                    seed_video_title = None
-                    seed_video_thumbnail = None
-                    if seed_resource.get('kind') == 'youtube#video':
-                        seed_video_id = seed_resource.get('videoId')
-                        # Fetch seed video thumbnail if available
-                        if seed_video_id:
-                            video_response = client.videos.list(video_ids=seed_video_id, part="snippet")
-                            if video_response and 'items' in video_response and video_response['items']:
-                                seed_video_snippet = video_response['items'][0].get('snippet', {})
-                                seed_video_thumbnail = seed_video_snippet.get('thumbnails', {}).get('default', {}).get('url')
-                                seed_video_title = seed_video_snippet.get('title')
-
-                    recommended_videos.append({
-                        'recommended_video_id': recommended_video_id,
-                        'recommended_video_title': recommended_video_title,
-                        'recommended_video_thumbnail': recommended_video_thumbnail,
-                        'recommendation_reason': recommendation_reason,
-                        'seed_video_id': seed_video_id,
-                        'seed_video_title': seed_video_title,
-                        'seed_video_thumbnail': seed_video_thumbnail,
-                    })
-    
-    next_page_token = response.get('nextPageToken') if response else None
+    # --- Determine if scrolling can continue ---
+    # We can continue if at least one category in our profile still has a page token.
+    can_continue = any(cat.get('next_page_token') for cat in profile['categories'])
+    next_page_token_for_client = "continue" if can_continue else None
 
     return {
         'recommended_videos': recommended_videos,
-        'next_page_token': next_page_token,
+        'next_page_token': next_page_token_for_client
     }
 
 def stream_recommended_activities(user: User) -> Generator[Dict[str, Any], None, None]:

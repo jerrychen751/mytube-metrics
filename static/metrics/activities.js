@@ -27,7 +27,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
         let url = '/recommended-videos/ajax/';
         if (nextPageToken) {
-            url += `?page_token=${nextPageToken}`;
+            // The new backend uses a simple session-based pagination, so we just need to signal we want the next page.
+            url += `?page=next`;
         }
 
         fetch(url, {
@@ -50,36 +51,14 @@ document.addEventListener('DOMContentLoaded', function() {
             nextPageToken = data.next_page_token;
             data.recommended_videos.forEach(video => {
                 const videoCard = `
-                    <div class="col-12 mb-4">
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="row">
-                                    <!-- Left Side: Recommended Video -->
-                                    <div class="col-md-6 border-end">
-                                        <h5 class="card-title">Recommended to You</h5>
-                                        <div class="d-flex">
-                                            <img src="${video.recommended_video_thumbnail}" class="img-fluid me-3" alt="${video.recommended_video_title}" style="width: 120px; height: 90px; object-fit: cover;">
-                                            <div>
-                                                <strong>${video.recommended_video_title}</strong>
-                                                <a href="https://www.youtube.com/watch?v=${video.recommended_video_id}" target="_blank" class="btn btn-sm btn-outline-primary d-block mt-2">Watch Video</a>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- Right Side: Seed Video & Reason -->
-                                    <div class="col-md-6">
-                                        <h5 class="card-title">Why You're Seeing This</h5>
-                                        <p class="card-text mb-2"><strong>Reason:</strong> ${video.recommendation_reason}</p>
-                                        ${video.seed_video_thumbnail ? `
-                                            <p class="card-text mb-1"><small class="text-muted">Because you watched:</small></p>
-                                            <div class="d-flex">
-                                                <img src="${video.seed_video_thumbnail}" class="img-fluid me-3" alt="${video.seed_video_title}" style="width: 120px; height: 90px; object-fit: cover;">
-                                                <div>
-                                                    <strong>${video.seed_video_title}</strong>
-                                                </div>
-                                            </div>
-                                        ` : '<p class="text-muted">Recommendation reason not based on a specific video.</p>'}
-                                    </div>
+                    <div class="col-sm-12 col-md-6 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body d-flex align-items-center">
+                                <img src="${video.recommended_video_thumbnail}" class="img-fluid me-3 rounded shadow-sm" alt="${video.recommended_video_title}" style="width: 160px; height: auto;">
+                                <div class="flex-grow-1 d-flex flex-column">
+                                    <h6 class="card-title text-center">${video.recommended_video_title}</h6>
+                                    <p class="card-text text-center"><small class="text-muted">${video.recommendation_reason}</small></p>
+                                    <a href="https://www.youtube.com/watch?v=${video.recommended_video_id}" target="_blank" class="btn btn-primary mt-auto">Watch on YouTube</a>
                                 </div>
                             </div>
                         </div>

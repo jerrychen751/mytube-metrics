@@ -21,7 +21,7 @@
         <div class="card h-100">
           <div class="card-body text-center">
             <i class="bi bi-people-fill fs-1 text-primary"></i>
-            <h5 class="card-title mt-3">Subscription Insights</h5>
+            <h5 class="card-title mt-3 text-danger">Subscription Insights</h5>
             <p class="card-text">View and analyze the channels you're subscribed to.</p>
             <a href="{% url 'subscriptions_list' %}" class="btn btn-primary mt-auto">See My Subscriptions</a>
           </div>
@@ -33,21 +33,9 @@
         <div class="card h-100">
           <div class="card-body text-center">
             <i class="bi bi-heart-fill fs-1 text-primary"></i>
-            <h5 class="card-title mt-3">Content Affinity</h5>
+            <h5 class="card-title mt-3 text-danger">Content Affinity</h5>
             <p class="card-text">Uncover the topics and categories in your liked videos.</p>
             <a href="{% url 'content_affinity' %}" class="btn btn-primary mt-auto">Analyze Content</a>
-          </div>
-        </div>
-      </div>
-
-      {# Look Familiar? Card #}
-      <div class="col-md-6 mb-4">
-        <div class="card h-100">
-          <div class="card-body text-center">
-            <i class="bi bi-lightbulb-fill fs-1 text-primary"></i>
-            <h5 class="card-title mt-3 text-danger">Look Familiar?</h5>
-            <p class="card-text">Discover the videos shaping your YouTube recommendations.</p>
-            <a href="{% url 'recommended_videos' %}" class="btn btn-primary mt-auto">See My Videos</a>
           </div>
         </div>
       </div>
@@ -60,6 +48,18 @@
             <h5 class="card-title mt-3 text-danger">Viewing Habit Evolution</h5>
             <p class="card-text">Track how your viewing patterns have changed over time.</p>
             <a href="{% url 'viewing_evolution' %}" class="btn btn-primary mt-auto">Analyze Evolution</a>
+          </div>
+        </div>
+      </div>
+
+      {# Look Familiar? Card #}
+      <div class="col-md-6 mb-4">
+        <div class="card h-100">
+          <div class="card-body text-center">
+            <i class="bi bi-lightbulb-fill fs-1 text-primary"></i>
+            <h5 class="card-title mt-3 text-danger">Look Familiar?</h5>
+            <p class="card-text">Discover the videos shaping your YouTube recommendations.</p>
+            <a href="{% url 'recommended_videos' %}" class="btn btn-primary mt-auto">See My Videos</a>
           </div>
         </div>
       </div>

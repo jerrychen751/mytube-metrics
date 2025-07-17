@@ -12,6 +12,8 @@ class Videos:
     def list_video(self, part: str = "id,snippet,status,contentDetails,statistics,topicDetails",
              user_rating: Optional[str] = None,             
              video_ids: Optional[str] = None,
+             chart: Optional[str] = None,
+             video_category_id: Optional[str] = None,
              max_results: int = 50,
              page_token: Optional[str] = None
             ) -> Optional[ApiResponse]:
@@ -23,6 +25,8 @@ class Videos:
             video_ids (Optional[str]): A comma-separated list of video IDs to retrieve.
             user_rating (Optional[str]): Retrieves videos rated by the authenticated user. 
                                      Acceptable values are "like" or "dislike". Requires OAuth.
+            chart (Optional[str]): Identifies the chart that you want to retrieve. Acceptable values are "mostPopular".
+            video_category_id (Optional[str]): The video category ID for which you want to retrieve popular videos.
             max_results (int): The maximum number of items to return (1-50).
             page_token (Optional[str]): The token for a specific page of results.
 
@@ -30,19 +34,23 @@ class Videos:
             Optional[ApiResponse]: The raw JSON response from the API, or None if an error occurs.
         """
         # Build params dictionary
-        params: Dict[str: Any] = {
+        params: Dict[str, Any] = {
             "part": part,
             "maxResults": max_results,
         }
+        use_oauth = False
 
         if user_rating and (user_rating == "like" or user_rating == "dislike"):
             params["myRating"] = user_rating
             use_oauth = True
         elif video_ids: # up to 50 specified video ids
             params["id"] = video_ids
-            use_oauth = False
+        elif chart:
+            params["chart"] = chart
+            if video_category_id:
+                params["videoCategoryId"] = video_category_id
         else:
-            raise ValueError("Either user_rating or video_ids must be provided.")
+            raise ValueError("Either user_rating, video_ids, or chart must be provided.")
 
         if page_token:
             params["pageToken"] = page_token
@@ -113,6 +121,7 @@ class Videos:
     
     def list_video_category(self, part: str = "snippet",
                             category_ids: Optional[str] = None,
+                            region_code: Optional[str] = None,
                             max_results: int = 50,
                             page_token: Optional[str] = None
                             ) -> Optional[ApiResponse]:
@@ -122,6 +131,7 @@ class Videos:
         Args:
             part (str): A comma-separated list of one or more videoCategory resource properties.
             category_ids (Optional[str]): A comma-separated list of video category IDs to retrieve.
+            region_code (Optional[str]): Instructs the API to return the list of video categories available in the specified country.
             max_results (int): The maximum number of items to return (1-50).
             page_token (Optional[str]): The token for a specific page of results.
 
@@ -134,8 +144,10 @@ class Videos:
         }
         if category_ids:
             params["id"] = category_ids
+        elif region_code:
+            params["regionCode"] = region_code
         else:
-            raise ValueError("category_ids must be provided.")
+            raise ValueError("Either category_ids or region_code must be provided.")
 
         if page_token:
             params["pageToken"] = page_token

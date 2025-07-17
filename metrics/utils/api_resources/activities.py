@@ -46,7 +46,7 @@ class Activities:
             params["pageToken"] = page_token
 
         return self._client._make_request(
-            "activities",
+            endpoint_path="activities",
             params=params,
             use_oauth=True
         )

@@ -125,7 +125,7 @@ def get_recommended_videos_ajax(request):
     try:
         page_token = request.GET.get('page_token')
         from .services.activity_analyzer import get_recommended_videos_context
-        context = get_recommended_videos_context(request.user, page_token=page_token)
+        context = get_recommended_videos_context(request, page_token=page_token)
         return JsonResponse(context)
     except RefreshError:
         logout(request)
