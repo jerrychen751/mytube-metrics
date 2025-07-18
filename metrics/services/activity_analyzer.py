@@ -67,7 +67,7 @@ def get_recommended_videos_context(request: Any,
 
                     # Truncate video title if excessively long
                     recommended_video_title = item.get('snippet', {}).get('title')
-                    if len(recommended_video_title) > 67:
+                    if len(recommended_video_title) > 70:
                         recommended_video_title = recommended_video_title[:70] + "..."
 
                     # Process video data
