@@ -5,7 +5,7 @@ from metrics.utils.api_client import YouTubeClient
 from .content_analyzer import get_category_freqs_in_playlist
 
 def get_recommended_videos_context(request: Any,
-                                   max_results: int = 7,
+                                   max_results: int = 10,
                                    ) -> Dict[str, Any]:
     """
     Fetches a random popular video based on weighted category frequencies,
@@ -28,7 +28,7 @@ def get_recommended_videos_context(request: Any,
 
     # Cap the list to prevent unbounded growth
     if len(recommended_video_ids_list) > MAX_IDS_TO_REMEMBER:
-        recommended_video_ids_list = recommended_video_ids_list[-MAX_IDS_TO_REMEMBER:]
+        recommended_video_ids_list = recommended_video_ids_list[-MAX_IDS_TO_REMEMBER:] # list of unique video ids
 
     recommended_video_ids = set(recommended_video_ids_list)
 
@@ -41,28 +41,25 @@ def get_recommended_videos_context(request: Any,
 
     # --- Fetching Logic ---
     recommended_videos = []
-    valid_category_ids = set(["1", "2", "10", "15", "17", "20", "22", "23", "24", "25", "26", "28", "29"])
-    max_attempts = max_results * 5
-    attempts = 0
+    valid_category_ids = set(["1", "2", "10", "15", "17", "20", "22", "23", "24", "25", "26", "28", "29"]) # YouTube does not enable retrieval of other category ids for some reason
+    valid_categories = {cat for cat, id in category_name_to_id.items() if id in valid_category_ids}
 
-    while len(recommended_videos) < max_results and attempts < max_attempts:
-        attempts += 1
+    while len(recommended_videos) < max_results:
+        # Choose a new category for each video we are trying to find
         chosen_category_name = get_random_category(client)
-        if not chosen_category_name:
+        if not chosen_category_name or not chosen_category_name in valid_categories:
             continue
 
+        # Fetch popular videos for the chosen category
         chosen_category_id = category_name_to_id.get(chosen_category_name)
-        if not chosen_category_id or chosen_category_id not in valid_category_ids:
-            continue
-
         response = client.videos.list_video(
             part="snippet",
             chart='mostPopular',
             video_category_id=chosen_category_id,
-            max_results=10,
         )
 
         if response and response.get('items'):
+            # Try to add the first unique video found from this category
             for item in response.get('items', []):
                 video_id = item.get('id')
                 if video_id not in recommended_video_ids:
@@ -73,10 +70,12 @@ def get_recommended_videos_context(request: Any,
                         'recommended_video_thumbnail': item.get('snippet', {}).get('thumbnails', {}).get('medium', {}).get('url'),
                         'recommendation_reason': f"Popular in {chosen_category_name}",
                     })
-                    if len(recommended_videos) >= max_results:
-                        break
-        if len(recommended_videos) >= max_results:
-            break
+                    # Break after adding one video, to pick a new category for the next video
+                    break
+
+            # Break from the outer loop if max_results is met by adding video
+            if len(recommended_videos) >= max_results:
+                break
     
     # Store the updated list of IDs back in the session
     request.session['recommended_video_ids'] = list(recommended_video_ids)
