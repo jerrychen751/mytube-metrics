@@ -50,7 +50,9 @@ document.addEventListener('DOMContentLoaded', function() {
                     <div class="col-sm-12 col-md-6 mb-4">
                         <div class="card h-100">
                             <div class="card-body d-flex align-items-center">
-                                <img src="${video.recommended_video_thumbnail}" class="img-fluid me-3 rounded shadow-sm" alt="${video.recommended_video_title}" style="width: 160px; height: auto;">
+                                <a href="https://www.youtube.com/watch?v=${video.recommended_video_id}" target="_blank" class="me-3">
+                                    <img src="${video.recommended_video_thumbnail}" class="img-fluid rounded shadow-sm" alt="${video.recommended_video_title}" style="width: 160px; height: auto;">
+                                </a>
                                 <div class="flex-grow-1 d-flex flex-column">
                                     <h6 class="card-title text-center">${video.recommended_video_title}</h6>
                                     <p class="card-text text-center"><small class="text-muted">${video.recommendation_reason}</small></p>
