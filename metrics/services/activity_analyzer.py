@@ -64,9 +64,16 @@ def get_recommended_videos_context(request: Any,
                 video_id = item.get('id')
                 if video_id not in recommended_video_ids:
                     recommended_video_ids.add(video_id)
+
+                    # Truncate video title if excessively long
+                    recommended_video_title = item.get('snippet', {}).get('title')
+                    if len(recommended_video_title) > 67:
+                        recommended_video_title = recommended_video_title[:70] + "..."
+
+                    # Process video data
                     recommended_videos.append({
                         'recommended_video_id': video_id,
-                        'recommended_video_title': item.get('snippet', {}).get('title'),
+                        'recommended_video_title': recommended_video_title,
                         'recommended_video_thumbnail': item.get('snippet', {}).get('thumbnails', {}).get('medium', {}).get('url'),
                         'recommendation_reason': f"Popular in {chosen_category_name}",
                     })
