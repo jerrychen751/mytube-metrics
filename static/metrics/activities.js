@@ -26,10 +26,6 @@ document.addEventListener('DOMContentLoaded', function() {
         loadingSpinner.style.display = 'block';
 
         let url = '/recommended-videos/ajax/';
-        if (nextPageToken) {
-            // The new backend uses a simple session-based pagination, so we just need to signal we want the next page.
-            url += `?page=next`;
-        }
 
         fetch(url, {
             method: 'GET',
@@ -72,7 +68,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // If there's no next page token and no videos were loaded, display a message
             if (!nextPageToken && data.recommended_videos.length === 0 && recommendedVideosContainer.children.length === 0) {
-                recommendedVideosContainer.innerHTML = '<p class="text-center col-12">No recommended videos found.</p>';
+                recommendedVideosContainer.innerHTML = '<p class="text-center col-12">No recommended videos found (have you liked any YouTube videos recently?)</p>';
+            }
+
+            // If there's more content and the page isn't full, load more.
+            const { scrollHeight, clientHeight } = document.documentElement;
+            if (nextPageToken && !isLoading && scrollHeight <= clientHeight) {
+                fetchRecommendedVideos();
             }
         })
         .catch(error => {

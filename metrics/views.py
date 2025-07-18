@@ -113,7 +113,8 @@ def user_logout(request):
 @login_required
 def recommended_videos(request):
     try:
-
+        # Clear recommended video IDs from session when the page is loaded
+        request.session.pop('recommended_video_ids', None)
         return render(request, 'metrics/recommended_videos.html')
     except RefreshError:
         logout(request)
@@ -121,12 +122,11 @@ def recommended_videos(request):
 
 # --- AJAX Endpoint for Recommended Videos ---
 @login_required
-def get_recommended_videos_ajax(request):
+def get_recommended_videos_ajax(request): # called by activities.js
     try:
-        page_token = request.GET.get('page_token')
         from .services.activity_analyzer import get_recommended_videos_context
-        context = get_recommended_videos_context(request, page_token=page_token)
-        return JsonResponse(context)
+        context = get_recommended_videos_context(request)
+        return JsonResponse(context) # send jSON data back to activities.js
     except RefreshError:
         logout(request)
         return redirect('login')
