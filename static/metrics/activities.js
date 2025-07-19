@@ -73,11 +73,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 recommendedVideosContainer.innerHTML = '<p class="text-center col-12">No recommended videos found (have you liked any YouTube videos recently?)</p>';
             }
 
-            // If there's more content and the page isn't full, load more.
-            const { scrollHeight, clientHeight } = document.documentElement;
-            if (nextPageToken && !isLoading && scrollHeight <= clientHeight) {
-                fetchRecommendedVideos();
-            }
+            
         })
         .catch(error => {
             console.error('Error fetching recommended videos:', error);

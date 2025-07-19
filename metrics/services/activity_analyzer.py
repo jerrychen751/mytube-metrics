@@ -44,11 +44,27 @@ def get_recommended_videos_context(request: Any,
     valid_category_ids = set(["1", "2", "10", "15", "17", "20", "22", "23", "24", "25", "26", "28", "29"]) # YouTube does not enable retrieval of other category ids for some reason
     valid_categories = {cat for cat, id in category_name_to_id.items() if id in valid_category_ids}
 
+    category_freqs = get_category_frequencies(client)
+    if not category_freqs:
+        return {
+            'recommended_videos': [],
+            'next_page_token': None
+        }
+
+    # Filter out invalid categories from the frequencies
+    category_freqs = {cat: freq for cat, freq in category_freqs.items() if cat in valid_categories}
+    if not category_freqs:
+        return {
+            'recommended_videos': [],
+            'next_page_token': None
+        }
+
+    category_names = list(category_freqs.keys())
+    category_weights = list(category_freqs.values())
+
     while len(recommended_videos) < max_results:
         # Choose a new category for each video we are trying to find
-        chosen_category_name = get_random_category(client)
-        if not chosen_category_name or not chosen_category_name in valid_categories:
-            continue
+        chosen_category_name = random.choices(category_names, weights=category_weights)[0]
 
         # Fetch popular videos for the chosen category
         chosen_category_id = category_name_to_id.get(chosen_category_name)
@@ -95,7 +111,7 @@ def get_recommended_videos_context(request: Any,
         'next_page_token': next_page_token_for_client
     }
 
-def get_random_category(client: YouTubeClient) -> Optional[str]:
+def get_category_frequencies(client: YouTubeClient) -> Optional[Dict[str, int]]:
     """
     Choose a specific video category from the categories which the user has liked in the past according to the frequency that they appear within the user's liked videos.
     
@@ -103,16 +119,12 @@ def get_random_category(client: YouTubeClient) -> Optional[str]:
         client (YouTubeClient): YouTubeClient object to make API calls.
 
     Returns:
-        str: Randomly chosen video category, or None if an error occurred.
+        A dictionary of category names and their frequencies, or None.
     """
     liked_videos_playlist_id = client.channels.get_liked_playlist_id()
     category_freqs = get_category_freqs_in_playlist(client, liked_videos_playlist_id)
     if not category_freqs:
         return None
 
-    category_names = list(category_freqs.keys())
-    category_weights = list(category_freqs.values())
-    chosen_category = random.choices(category_names, weights=category_weights)[0]
-
-    return chosen_category
+    return category_freqs
 

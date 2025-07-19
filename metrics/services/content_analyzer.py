@@ -148,7 +148,7 @@ def get_category_freqs_in_playlist(client: YouTubeClient, playlist_id: str) -> D
         playlist_id (str): The ID of the playlist to analyze.
 
     Returns:
-        A dictionary with category names as keys and their frequency count as values.
+        A dictionary with category names as keys and their frequency count as values. Returns None if an error occurred or the user has no liked videos.
     """
     all_playlistitems = client.playlist_items.list_all(playlist_id)
     video_ids = []
