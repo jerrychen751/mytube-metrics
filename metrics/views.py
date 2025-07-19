@@ -1,9 +1,13 @@
+import json
+import os
+import zipfile
+import shutil
+
 from django.shortcuts import redirect, render
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 
 from .models import UserCredential
-from .utils.api_client import YouTubeClient
 from .utils.auth_helper import OAuth
 
 # --- Initial Login Page ---
@@ -135,6 +139,60 @@ def get_recommended_videos_ajax(request): # called by activities.js
 @login_required
 def viewing_evolution(request):
     try:
+        if request.method == 'POST' and 'takeout-zip' in request.FILES:
+            uploaded_file = request.FILES['takeout-zip']
+
+            if not uploaded_file.name.endswith('.zip'):
+                return JsonResponse({'status': 'error', 'message': 'Only .zip files are allowed.'}, status=400)
+
+            # Define a temporary directory for uploads
+            temp_dir = os.path.join('/tmp', 'takeout_uploads') # Using /tmp for temporary files
+            os.makedirs(temp_dir, exist_ok=True)
+            temp_zip_path = os.path.join(temp_dir, uploaded_file.name)
+            extracted_path = os.path.join(temp_dir, uploaded_file.name + '_extracted')
+
+            try:
+                # Save the uploaded zip file temporarily
+                with open(temp_zip_path, 'wb+') as destination:
+                    for chunk in uploaded_file.chunks():
+                        destination.write(chunk)
+
+                # Extract the zip file
+                with zipfile.ZipFile(temp_zip_path, 'r') as zip_ref:
+                    zip_ref.extractall(extracted_path)
+
+                # Locate watch-history.json within the extracted files
+                watch_history_json_path = None
+                for root, _, files in os.walk(extracted_path):
+                    for file in files:
+                        if file.lower() == 'watch-history.json':
+                            watch_history_json_path = os.path.join(root, file)
+                            break
+                    if watch_history_json_path:
+                        break
+
+                if not watch_history_json_path:
+                    return JsonResponse({'status': 'error', 'message': 'watch-history.json not found in the uploaded zip file.'}, status=400)
+
+                # Read the content of watch-history.json
+                with open(watch_history_json_path, 'r', encoding='utf-8') as json_file:
+                    file_content = json_file.read()
+                
+                from .services.history_analyzer import process_takeout_data
+                analysis_results = process_takeout_data(file_content)
+                
+                context = {'analysis_results': analysis_results}
+                return render(request, 'metrics/viewing_evolution.html', context)
+
+            except Exception as e:
+                return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
+            finally:
+                # Clean up temporary files and directory
+                if os.path.exists(temp_zip_path):
+                    os.remove(temp_zip_path)
+                if os.path.exists(extracted_path):
+                    shutil.rmtree(extracted_path)
+        
         return render(request, 'metrics/viewing_evolution.html')
     except RefreshError:
         logout(request)

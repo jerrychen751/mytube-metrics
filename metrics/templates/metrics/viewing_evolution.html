@@ -10,6 +10,31 @@
 
     <div class="card mb-4">
         <div class="card-body">
+            <h5 class="card-title">Upload YouTube Takeout Data</h5>
+            <p class="card-text">To get more detailed insights into your viewing evolution, you can upload your YouTube Takeout data. Follow these steps:</p>
+            <ol>
+                <li>Go to <a href="https://takeout.google.com/" target="_blank">Google Takeout</a>.</li>
+                <li>Deselect all products except "YouTube and YouTube Music".</li>
+                <li>Click on "Next step".</li>
+                <li>Choose your desired file type (.zip is recommended). Make sure to select JSON as the format for your YouTube watch history data, not HTML.</li>
+                <li>Click "Create export".</li>
+                <li>Once your export is ready, download the .zip file.</li>
+                <li>Upload the downloaded .zip file below.</li>
+            </ol>
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="takeout-zip" class="form-label">Choose .zip File</label>
+                    <input class="form-control" type="file" id="takeout-zip" name="takeout-zip" accept=".zip">
+                </div>
+                <button type="submit" class="btn btn-primary">Upload and Analyze</button>
+            </form>
+            <div id="uploadMessage" class="mt-3"></div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-body">
             <h5 class="card-title">Viewing Trends Over Time</h5>
             <div id="viewingEvolutionChart" style="height: 400px;"></div>
             <p class="card-text text-muted">Data will be loaded here to show your viewing trends.</p>
@@ -29,33 +54,5 @@
 
 {% block extra_scripts %}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    // Placeholder for JavaScript to render charts
-    document.addEventListener('DOMContentLoaded', function() {
-        const ctx = document.getElementById('viewingEvolutionChart');
-        if (ctx) {
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: [], // Dates
-                    datasets: [{
-                        label: 'Videos Watched',
-                        data: [], // Number of videos
-                        borderColor: 'rgb(75, 192, 192)',
-                        tension: 0.1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-        }
-    });
-</script>
+<script src="{% static 'metrics/history.js' %}"></script>
 {% endblock %}

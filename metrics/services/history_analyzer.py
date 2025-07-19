@@ -1,5 +1,6 @@
 from typing import Any, Dict, Generator, Optional
 from collections import defaultdict
+import json
 
 from django.contrib.auth.models import User
 
@@ -70,3 +71,22 @@ def get_engagement_evolution_context(user: User) -> Dict[str, Any]:
         'top_liked_channels': processed_top_liked_channels,
         'top_subscribed_channels': processed_top_subscribed_channels,
     }
+
+def process_takeout_data(file_content: str) -> Dict[str, Any]:
+    """
+    Processes the content of a YouTube Takeout JSON file.
+
+    Args:
+        file_content (str): The content of the uploaded JSON file as a string.
+
+    Returns:
+        Dict[str, Any]: A dictionary containing the processed data.
+    """
+    try:
+        data = json.loads(file_content)
+        # For now, just return a confirmation. More detailed analysis will go here.
+        return {'status': 'success', 'message': 'Takeout data processed successfully.', 'data_length': len(data)}
+    except json.JSONDecodeError:
+        return {'status': 'error', 'message': 'Invalid JSON file.'}
+    except Exception as e:
+        return {'status': 'error', 'message': f'An error occurred: {str(e)}'}
