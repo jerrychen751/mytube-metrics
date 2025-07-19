@@ -2,6 +2,7 @@
 .env
 venv/
 .venv/
+Takeout/
 GEMINI.md
 
 # Cache
