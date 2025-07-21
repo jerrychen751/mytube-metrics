@@ -12,7 +12,7 @@
 <div class="container">
     <div class="text-center my-5">
         <h1 class="display-5">Welcome, {% if user.first_name %}{{ user.first_name }}{% else %}{{ user.username }}{% endif %}!</h1>
-        <p class="lead text-muted">Choose a metric below to start analyzing your YouTube habits.</p>
+        <p class="lead text-muted">Choose an option below to start visualizing your YouTube habits.</p>
     </div>
     
     <div class="row">
@@ -22,7 +22,7 @@
           <div class="card-body text-center">
             <i class="bi bi-people-fill fs-1 text-primary"></i>
             <h5 class="card-title mt-3 text-danger">Subscription Insights</h5>
-            <p class="card-text">View and analyze the channels you're subscribed to.</p>
+            <p class="card-text">View the stats of the channels you're subscribed to.</p>
             <a href="{% url 'subscriptions_list' %}" class="btn btn-primary mt-auto">See My Subscriptions</a>
           </div>
         </div>
@@ -34,7 +34,7 @@
           <div class="card-body text-center">
             <i class="bi bi-heart-fill fs-1 text-primary"></i>
             <h5 class="card-title mt-3 text-danger">Content Affinity</h5>
-            <p class="card-text">Uncover the topics and categories in your liked videos.</p>
+            <p class="card-text">Identify topic trends in your liked videos.</p>
             <a href="{% url 'content_affinity' %}" class="btn btn-primary mt-auto">Analyze Content</a>
           </div>
         </div>
@@ -59,7 +59,7 @@
             <i class="bi bi-graph-up fs-1 text-primary"></i>
             <h5 class="card-title mt-3 text-danger">Viewing Habit Evolution</h5>
             <p class="card-text">Track how your viewing patterns have changed over time.</p>
-            <a href="{% url 'viewing_evolution' %}" class="btn btn-primary mt-auto">Analyze Evolution</a>
+            <a href="{% url 'viewing_evolution' %}" class="btn btn-primary mt-auto">View Evolution</a>
           </div>
         </div>
       </div>
