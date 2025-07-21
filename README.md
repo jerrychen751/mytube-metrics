@@ -27,7 +27,7 @@ Users log in with Google accounts via OAuth 2.0, granting read-only access to Yo
     ![Subscriptions List](assets/subscriptions.png)
   - **Content Affinity Analysis:** Identifies popular topics/categories from the user's "Liked Videos" playlist.
     ![Content Affinity Chart](assets/content_affinity.png)
-  - **Recommended Videos:** Discovers popular videos based on liked content categories, with infinite scrolling.
+  - **Recommended Videos:** Discovers popular videos based on liked content categories, with infinite scroll feature.
     ![Recommended Videos](assets/recommended_videos.png)
   - **Viewing Habit Evolution:** Upload YouTube Takeout data for watch history, daily/monthly frequencies, and top watched channels.
     ![Takeout Upload](assets/file_upload.png)
