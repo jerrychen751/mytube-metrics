@@ -37,8 +37,11 @@
                     {% if sub.channel_description %}
                         <div class="description-wrapper">
                             <p class="card-text description-text collapsed">{{ sub.channel_description|linebreaksbr }}</p>
-                            <a href="#" class="btn btn-link btn-sm p-0 read-more-btn" style="display: none;">Read more</a>
+                            <button type="button" class="btn btn-sm read-more-btn mx-auto" style="background-color: #d9534f; border-color: #d9534f; color: white;">Read more <i class="bi bi-chevron-down ms-2"></i></button>
                         </div>
+                        <hr>
+                    {% else %}
+                        <p class="card-text text-center">✨✨Nothing to see here✨✨</p>
                         <hr>
                     {% endif %}
                     <div class="row">
