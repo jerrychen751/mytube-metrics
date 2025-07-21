@@ -44,7 +44,25 @@ def create_plotly_chart_dict(freq_data: Dict[str, int], data_name: str, chart_ty
             legend_title_text=legend_title
         )
     elif chart_type == 'timeseries_bar':
-        fig = go.Figure(data=[go.Bar(x=labels, y=values)])
+        # Define a blue color scale
+        blue_colorscale = [
+            [0, 'rgb(204, 204, 255)'],  # Lightest blue
+            [0.2, 'rgb(153, 153, 255)'],
+            [0.4, 'rgb(102, 102, 255)'],
+            [0.6, 'rgb(51, 51, 255)'],
+            [0.8, 'rgb(100, 100, 200)'],    # Softer pure blue
+            [1, 'rgb(50, 50, 150)']     # Darkest blue (softer)
+        ]
+
+        fig = go.Figure(data=[go.Bar(
+            x=labels,
+            y=values,
+            marker=dict(
+                color=values,  # Color based on the 'values' (number of videos watched)
+                colorscale=blue_colorscale,
+                showscale=True
+            )
+        )])
         fig.update_layout(
             title_text=chart_title,
             xaxis_title="Month",
@@ -54,7 +72,7 @@ def create_plotly_chart_dict(freq_data: Dict[str, int], data_name: str, chart_ty
             xaxis_rangeslider_visible=True
         )
     elif chart_type == 'daily_needle_chart':
-        fig = go.Figure(data=[go.Scatter(x=labels, y=values, mode='lines', line=dict(width=1))])
+        fig = go.Figure(data=[go.Scatter(x=labels, y=values, mode='lines', line=dict(width=1, color='#FF9999'))])
         fig.update_layout(
             title_text=chart_title,
             xaxis_title="Date",

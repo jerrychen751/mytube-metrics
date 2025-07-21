@@ -56,7 +56,7 @@ def get_viewing_evolution_context(request: HttpRequest) -> Dict[str, Any]:
                                 freq_data=daily_watch_freq,
                                 data_name="Videos Watched",
                                 chart_type='daily_needle_chart',
-                                chart_title="Daily Watch Frequency (Needle View)"
+                                chart_title="Daily Watch Frequency"
                             ))
                         context['success_message'] = 'File uploaded successfully.'
                 else:
