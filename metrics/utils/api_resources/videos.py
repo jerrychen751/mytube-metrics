@@ -1,6 +1,8 @@
-from metrics.utils.types import ApiResponse
+# Standard Library Imports
+from typing import Any, Dict, List, Optional
 
-from typing import Any, Optional, Dict, List
+# Local App Imports
+from metrics.utils.types import ApiResponse
 
 class Videos:
     """

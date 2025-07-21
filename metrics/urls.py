@@ -1,4 +1,7 @@
+# Third-Party Imports
 from django.urls import path
+
+# Local App Imports
 from . import views
 
 urlpatterns = [

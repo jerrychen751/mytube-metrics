@@ -1,5 +1,6 @@
+# Standard Library Imports
+from typing import Any, List
 from urllib.parse import unquote
-from typing import List, Any
 
 def parse_topic_urls(topic_details: Any) -> List[str]:
     """Convert the topicDetails object from YouTube Data API into a list of user-friendly topic tags."""

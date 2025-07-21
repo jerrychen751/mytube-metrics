@@ -1,13 +1,21 @@
-import json
-import os
+# Standard Library Imports
 import zipfile
-import shutil
 
-from django.shortcuts import redirect, render
+# Third-Party Imports
+import requests
+from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.http import JsonResponse
+from django.shortcuts import redirect, render
+from google.auth.exceptions import RefreshError
 
+# Local App Imports
 from .models import UserCredential
+from .services.activity_analyzer import get_recommended_videos_context
+from .services.content_analyzer import get_content_affinity_context
+from .services.history_analyzer import process_takeout_data
+from .services.subscription_analyzer import get_subscription_list_context
 from .utils.auth_helper import OAuth
 
 # --- Initial Login Page ---
@@ -33,10 +41,6 @@ def google_login(request):
     return render(request, 'metrics/login.html')
 
 # --- OAuth Flow (callback/) ---
-from django.contrib.auth import login, logout
-from django.contrib.auth.models import User
-import requests
-
 def google_callback(request):
     state = request.session.pop('oauth_state', None)
     if not state:
@@ -54,7 +58,7 @@ def google_callback(request):
     user_info = user_info_response.json()
 
     # Create or get the user in auth_user table
-    user, created = User.objects.get_or_create(
+    user, _ = User.objects.get_or_create(
         email=user_info['email'],
         defaults={
             'username': user_info['email'],
@@ -83,13 +87,10 @@ def dashboard(request):
     return render(request, 'metrics/dashboard.html')
 
 # --- Subscription Insights (subscriptions/) ---
-from google.auth.exceptions import RefreshError
-
 @login_required
 def subscriptions_list(request):
     try:
         page_num = int(request.GET.get('page', 1))
-        from .services.subscription_analyzer import get_subscription_list_context
         context = get_subscription_list_context(request.user, page_num)
         return render(request, 'metrics/subscriptions_list.html', context)
     except RefreshError:
@@ -101,7 +102,6 @@ def subscriptions_list(request):
 @login_required
 def content_affinity(request):
     try:
-        from .services.content_analyzer import get_content_affinity_context
         context = get_content_affinity_context(request.user)
         return render(request, 'metrics/content_affinity.html', context)
     except RefreshError:
@@ -128,7 +128,6 @@ def recommended_videos(request):
 @login_required
 def get_recommended_videos_ajax(request): # called by activities.js
     try:
-        from .services.activity_analyzer import get_recommended_videos_context
         context = get_recommended_videos_context(request)
         return JsonResponse(context) # send jSON data back to activities.js
     except RefreshError:
@@ -140,58 +139,37 @@ def get_recommended_videos_ajax(request): # called by activities.js
 def viewing_evolution(request):
     try:
         if request.method == 'POST' and 'takeout-zip' in request.FILES:
-            uploaded_file = request.FILES['takeout-zip']
-
-            if not uploaded_file.name.endswith('.zip'):
-                return JsonResponse({'status': 'error', 'message': 'Only .zip files are allowed.'}, status=400)
-
-            # Define a temporary directory for uploads
-            temp_dir = os.path.join('/tmp', 'takeout_uploads') # Using /tmp for temporary files
-            os.makedirs(temp_dir, exist_ok=True)
-            temp_zip_path = os.path.join(temp_dir, uploaded_file.name)
-            extracted_path = os.path.join(temp_dir, uploaded_file.name + '_extracted')
+            # InMemoryUploadedFile object from Django, or TemporaryUploadedFile if file is large
+            uploaded_zip = request.FILES['takeout-zip']
 
             try:
-                # Save the uploaded zip file temporarily
-                with open(temp_zip_path, 'wb+') as destination:
-                    for chunk in uploaded_file.chunks():
-                        destination.write(chunk)
+                with zipfile.ZipFile(uploaded_zip.read(), 'r') as zf: # no need for 'rb'
+                    # .read() returns a `bytes` object; io.BytesIO creates in-memory binary stream
 
-                # Extract the zip file
-                with zipfile.ZipFile(temp_zip_path, 'r') as zip_ref:
-                    zip_ref.extractall(extracted_path)
-
-                # Locate watch-history.json within the extracted files
-                watch_history_json_path = None
-                for root, _, files in os.walk(extracted_path):
-                    for file in files:
-                        if file.lower() == 'watch-history.json':
-                            watch_history_json_path = os.path.join(root, file)
+                    # Find the watch history file
+                    watch_history_file = None
+                    for file_name in zf.namelist():
+                        if 'watch-history.json' in file_name:
+                            watch_history_file = file_name # full path to watch-history.json file
                             break
-                    if watch_history_json_path:
-                        break
+                    
+                    if watch_history_file:
+                        with zf.open(watch_history_file) as json_file:
+                            # `json_file` is a ZipExtFile object which behaves like a regular file
+                            # `.read()` decompresses binary data --> `.decode()` converts binary into Unicode string
+                            # UTF-8 is format for storing Unicode as bytes
+                            file_content = json_file.read().decode('utf-8') # string
+                            analysis_results = process_takeout_data(file_content)
+                            context = {'analysis_results': analysis_results}
+                        return render(request, 'metrics/viewing_evolution.html', context)
+                    
+                    # No watch-history.json file found
+                    context = {'error': 'watch-history.json not found in the uploaded .zip file.'}
+                    return render(request, 'metrics/viewing_evolution.html', context)
 
-                if not watch_history_json_path:
-                    return JsonResponse({'status': 'error', 'message': 'watch-history.json not found in the uploaded zip file.'}, status=400)
-
-                # Read the content of watch-history.json
-                with open(watch_history_json_path, 'r', encoding='utf-8') as json_file:
-                    file_content = json_file.read()
-                
-                from .services.history_analyzer import process_takeout_data
-                analysis_results = process_takeout_data(file_content)
-                
-                context = {'analysis_results': analysis_results}
+            except zipfile.BadZipFile: # if zipfile.ZipFile() cannot interpret uploaded file, catch error
+                context = {'error': 'Invalid .zip file.'}
                 return render(request, 'metrics/viewing_evolution.html', context)
-
-            except Exception as e:
-                return JsonResponse({'status': 'error', 'message': str(e)}, status=500)
-            finally:
-                # Clean up temporary files and directory
-                if os.path.exists(temp_zip_path):
-                    os.remove(temp_zip_path)
-                if os.path.exists(extracted_path):
-                    shutil.rmtree(extracted_path)
         
         return render(request, 'metrics/viewing_evolution.html')
     except RefreshError:

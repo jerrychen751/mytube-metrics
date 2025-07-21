@@ -1,6 +1,8 @@
-from typing import Any, Dict, Optional
+# Standard Library Imports
 import random
+from typing import Any, Dict, Optional
 
+# Local App Imports
 from metrics.utils.api_client import YouTubeClient
 from .content_analyzer import get_category_freqs_in_playlist
 

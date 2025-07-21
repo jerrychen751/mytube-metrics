@@ -1,5 +1,6 @@
-from django.db import models
+# Third-Party Imports
 from django.contrib.auth.models import User
+from django.db import models
 
 class UserCredential(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)

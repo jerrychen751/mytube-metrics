@@ -1,14 +1,18 @@
+# Standard Library Imports
 import os
+from typing import Any
+
+# Third-Party Imports
 import requests
 from dotenv import load_dotenv
-from google.oauth2.credentials import Credentials
 from google.auth.transport.requests import AuthorizedSession
+from google.oauth2.credentials import Credentials
 
+# Local App Imports
 from metrics.models import UserCredential
-from .api_resources import Channels, Playlists, Subscriptions, Videos, PlaylistItems, Activities
-
+from .api_resources import (Activities, Channels, PlaylistItems, Playlists,
+                          Subscriptions, Videos)
 from .types import ApiResponse
-from typing import Any
 
 class YouTubeClient:
     """

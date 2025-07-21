@@ -1,8 +1,12 @@
-from metrics.utils.date_helper import isostr_to_datetime
+# Standard Library Imports
+from typing import Any, Dict, Optional
 from urllib.parse import unquote
 
-from typing import Any, Optional, Dict
+# Local App Imports
+from metrics.utils.date_helper import isostr_to_datetime
+from metrics.utils.topic_helper import parse_topic_urls
 from metrics.utils.types import ApiResponse
+
 
 class Channels:
     def __init__(self, client: Any) -> None:
@@ -73,7 +77,6 @@ class Channels:
             statistics = channel_resource.get('statistics', {})
             topic_details = channel_resource.get('topicDetails', {})
             
-            from metrics.utils.topic_helper import parse_topic_urls
             parsed_topics = parse_topic_urls(topic_details)
 
             data = {

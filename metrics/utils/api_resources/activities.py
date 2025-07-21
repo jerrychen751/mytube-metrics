@@ -1,7 +1,9 @@
-from typing import Any, Optional, Generator, Dict
+# Standard Library Imports
+from typing import Any, Dict, Generator, Optional
 
-from metrics.utils.types import ApiResponse
+# Local App Imports
 from metrics.utils.date_helper import is_valid_datetime_range
+from metrics.utils.types import ApiResponse
 
 class Activities:
     def __init__(self, client: Any):

@@ -4,16 +4,17 @@ Responsible for analyzing user content affinity, such as:
     - Analyzing the reasoning YouTube uses to recommend videos on home page.
 """
 
-from typing import Dict, Any
+# Standard Library Imports
 from collections import Counter
-import plotly.graph_objects as go
+from typing import Any, Dict
 
+# Third-Party Imports
+import plotly.graph_objects as go
 from django.contrib.auth.models import User
 
+# Local App Imports
 from metrics.utils.api_client import YouTubeClient
-from metrics.utils.types import ApiResponse
 from metrics.utils.topic_helper import parse_topic_urls
-from metrics.utils.date_helper import isostr_to_datetime
 
 def get_content_affinity_context(user: User) -> Dict[str, Any]:
     """
