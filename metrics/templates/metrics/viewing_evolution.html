@@ -11,6 +11,17 @@
     <div class="card mb-4">
         <div class="card-body">
             <h5 class="card-title">Upload YouTube Takeout Data</h5>
+            {% if error %}
+                <div class="alert alert-danger" role="alert">
+                    {{ error }}
+                </div>
+            {% endif %}
+            {% if success_message %}
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    {{ success_message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endif %}
             <p class="card-text">To get more detailed insights into your viewing evolution, you can upload your YouTube Takeout data. Follow these steps:</p>
             <ol>
                 <li>Go to <a href="https://takeout.google.com/" target="_blank">Google Takeout</a>.</li>
@@ -35,24 +46,47 @@
 
     <div class="card mb-4">
         <div class="card-body">
-            <h5 class="card-title">Viewing Trends Over Time</h5>
-            <div id="viewingEvolutionChart" style="height: 400px;"></div>
-            <p class="card-text text-muted">Data will be loaded here to show your viewing trends.</p>
+            <h5 class="card-title">YouTube Activity Over the Years</h5>
+            {% if daily_watch_freq_chart %}
+                <div id="dailyWatchFreqChart"></div>
+            {% else %}
+                <p class="card-text text-muted">Upload your Takeout data to see your daily viewing trends.</p>
+            {% endif %}
+            {% if monthly_watch_freq_chart %}
+                <div id="viewingEvolutionChart"></div>
+            {% else %}
+                <p class="card-text text-muted">Upload your Takeout data to see your viewing trends.</p>
+            {% endif %}
         </div>
     </div>
 
     <div class="card">
         <div class="card-body">
-            <h5 class="card-title">Top Channels by Watch Time</h5>
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item text-muted">Top channels by watch time will appear here.</li>
-            </ul>
+            <h5 class="card-title">Top Channels by Videos Watched</h5>
+            {% if analysis_results.top_channels %}
+                <ul class="list-group list-group-flush">
+                    {% for channel, count in analysis_results.top_channels.items %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ channel }}
+                            <span class="badge bg-primary rounded-pill">{{ count }} videos</span>
+                        </li>
+                    {% endfor %}
+                </ul>
+            {% else %}
+                <p class="card-text text-muted">Upload your Takeout data to see your top channels by videos watched.</p>
+            {% endif %}
         </div>
     </div>
 </div>
 {% endblock %}
 
 {% block extra_scripts %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="{% static 'metrics/history.js' %}"></script>
+<script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+<script id="chart-data" type="application/json">
+    {{ monthly_watch_freq_chart|safe }}
+</script>
+<script id="daily-chart-data" type="application/json">
+    {{ daily_watch_freq_chart|safe }}
+</script>
+<script src="{% static 'metrics/viewing_evolution.js' %}"></script>
 {% endblock %}

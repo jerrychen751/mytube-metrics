@@ -14,7 +14,7 @@ from google.auth.exceptions import RefreshError
 from .models import UserCredential
 from .services.activity_analyzer import get_recommended_videos_context
 from .services.content_analyzer import get_content_affinity_context
-from .services.history_analyzer import process_takeout_data
+from .services.history_analyzer import get_viewing_evolution_context
 from .services.subscription_analyzer import get_subscription_list_context
 from .utils.auth_helper import OAuth
 
@@ -138,40 +138,8 @@ def get_recommended_videos_ajax(request): # called by activities.js
 @login_required
 def viewing_evolution(request):
     try:
-        if request.method == 'POST' and 'takeout-zip' in request.FILES:
-            # InMemoryUploadedFile object from Django, or TemporaryUploadedFile if file is large
-            uploaded_zip = request.FILES['takeout-zip']
-
-            try:
-                with zipfile.ZipFile(uploaded_zip.read(), 'r') as zf: # no need for 'rb'
-                    # .read() returns a `bytes` object; io.BytesIO creates in-memory binary stream
-
-                    # Find the watch history file
-                    watch_history_file = None
-                    for file_name in zf.namelist():
-                        if 'watch-history.json' in file_name:
-                            watch_history_file = file_name # full path to watch-history.json file
-                            break
-                    
-                    if watch_history_file:
-                        with zf.open(watch_history_file) as json_file:
-                            # `json_file` is a ZipExtFile object which behaves like a regular file
-                            # `.read()` decompresses binary data --> `.decode()` converts binary into Unicode string
-                            # UTF-8 is format for storing Unicode as bytes
-                            file_content = json_file.read().decode('utf-8') # string
-                            analysis_results = process_takeout_data(file_content)
-                            context = {'analysis_results': analysis_results}
-                        return render(request, 'metrics/viewing_evolution.html', context)
-                    
-                    # No watch-history.json file found
-                    context = {'error': 'watch-history.json not found in the uploaded .zip file.'}
-                    return render(request, 'metrics/viewing_evolution.html', context)
-
-            except zipfile.BadZipFile: # if zipfile.ZipFile() cannot interpret uploaded file, catch error
-                context = {'error': 'Invalid .zip file.'}
-                return render(request, 'metrics/viewing_evolution.html', context)
-        
-        return render(request, 'metrics/viewing_evolution.html')
+        context = get_viewing_evolution_context(request)
+        return render(request, 'metrics/viewing_evolution.html', context)
     except RefreshError:
         logout(request)
         return redirect('login')

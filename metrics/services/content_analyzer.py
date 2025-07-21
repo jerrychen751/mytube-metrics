@@ -9,12 +9,12 @@ from collections import Counter
 from typing import Any, Dict
 
 # Third-Party Imports
-import plotly.graph_objects as go
 from django.contrib.auth.models import User
 
 # Local App Imports
 from metrics.utils.api_client import YouTubeClient
 from metrics.utils.topic_helper import parse_topic_urls
+from .visualizer import create_plotly_chart_dict
 
 def get_content_affinity_context(user: User) -> Dict[str, Any]:
     """
@@ -43,7 +43,8 @@ def get_content_affinity_context(user: User) -> Dict[str, Any]:
             context["topic_freq_chart_dict"] = create_plotly_chart_dict(
                 freq_data=topic_freqs,
                 data_name="Topic",
-                chart_type='bar'
+                chart_type='bar',
+                chart_title="Topic Frequencies"
             )
 
         # Determine video category frequencies and create donut chart
@@ -53,50 +54,13 @@ def get_content_affinity_context(user: User) -> Dict[str, Any]:
             context["category_freq_chart_dict"] = create_plotly_chart_dict(
                 freq_data=category_freqs,
                 data_name="Category",
-                chart_type='donut'
+                chart_type='donut',
+                chart_title="Category Distribution"
             )
 
         # 
 
     return context
-
-def create_plotly_chart_dict(freq_data: Dict[str, int], data_name: str, chart_type: str) -> Dict[str, Any]:
-    """
-    Creates a JSON-serializable dictionary of a Plotly chart for frequency data.
-
-    Args:
-        freq_data: A dictionary with item names as keys and their frequencies as values.
-        data_name: The name of the data being plotted (e.g., "Topic", "Category").
-        chart_type: The type of chart to generate ('bar' or 'donut').
-
-    Returns:
-        A dictionary representing the Plotly figure, ready for JSON serialization.
-    """
-    # Sort data so the highest frequency is at the top of the chart
-    sorted_items = sorted(freq_data.items(), key=lambda x: x[1])
-    labels = [item[0] for item in sorted_items]
-    values = [item[1] for item in sorted_items]
-
-    if chart_type == 'bar':
-        fig = go.Figure(data=[go.Bar(x=values, y=labels, orientation='h')])
-        fig.update_layout(
-            title_text=f'{data_name} Frequencies',
-            xaxis_title="Frequency",
-            yaxis=dict(tickmode='array', tickvals=labels, ticktext=labels),
-            margin=dict(l=150), # Add left margin to prevent labels from being cut off
-            height=max(400, len(labels) * 25) # Dynamically adjust height
-        )
-    elif chart_type == 'donut':
-        legend_title = "Categories" if data_name == "Category" else data_name + 's'
-        fig = go.Figure(data=[go.Pie(labels=labels, values=values, hole=.4)])
-        fig.update_layout(
-            title_text=f'{data_name} Distribution',
-            legend_title_text=legend_title
-        )
-    else:
-        fig = go.Figure() # Return an empty figure if chart_type is invalid
-
-    return fig.to_dict()
 
 
 def get_topic_freqs_in_playlist(client: YouTubeClient, playlist_id: str) -> Dict[str, int]:
