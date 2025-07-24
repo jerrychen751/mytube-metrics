@@ -1,6 +1,8 @@
 asgiref==3.8.1
 astroid==3.3.11
 blinker==1.9.0
+boto3==1.39.12
+botocore==1.39.12
 cachetools==5.5.2
 certifi==2025.4.26
 charset-normalizer==3.4.2
@@ -12,6 +14,7 @@ cycler==0.12.1
 dill==0.4.0
 Django==5.2.3
 django-humanize==0.1.2
+django-storages==1.14.6
 Flask==3.1.1
 fonttools==4.58.5
 google-api-core==2.25.0
@@ -20,6 +23,7 @@ google-auth==2.40.3
 google-auth-httplib2==0.2.0
 google-auth-oauthlib==1.2.2
 googleapis-common-protos==1.70.0
+gunicorn==23.0.0
 httplib2==0.22.0
 humanize==4.12.3
 idna==3.10
@@ -27,6 +31,7 @@ iniconfig==2.1.0
 isort==6.0.1
 itsdangerous==2.2.0
 Jinja2==3.1.6
+jmespath==1.0.1
 kiwisolver==1.4.8
 MarkupSafe==3.0.2
 mccabe==0.7.0
@@ -54,6 +59,7 @@ pytz==2025.2
 requests==2.32.4
 requests-oauthlib==2.0.0
 rsa==4.9.1
+s3transfer==0.13.1
 six==1.17.0
 sqlparse==0.5.3
 tomlkit==0.13.3
