@@ -14,7 +14,7 @@ import os
 from pathlib import Path
 
 # Set debug mode
-DEBUG = os.environ.get('DJANGO_DEBUG', '') != False
+DEBUG = os.environ.get('DJANGO_DEBUG') == 'True'
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -29,7 +29,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 
 # Application definition
