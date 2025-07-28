@@ -5,13 +5,14 @@ import os
 from dotenv import load_dotenv
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import Flow
+from django.conf import settings
 
 class OAuth:
     def __init__(self) -> None:
         os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
         load_dotenv()
         self.scopes = os.getenv("SCOPES", "").split(',')
-        self.active_redirect_uri = os.getenv("REDIRECT_URI")
+        self.active_redirect_uri = settings.REDIRECT_URI
 
     def build_client_config(self) -> dict[str, dict[str, str]]:
         """
@@ -26,7 +27,6 @@ class OAuth:
             "CLIENT_SECRET",
             "AUTH_URI",
             "TOKEN_URI",
-            "REDIRECT_URI"
         ]
 
         missing = [param for param in required if not os.getenv(param)]
@@ -43,6 +43,7 @@ class OAuth:
                 "redirect_uris": [self.active_redirect_uri]
             }
         }
+
 
     def get_authorization_url(self) -> tuple[str, str]:
         """
