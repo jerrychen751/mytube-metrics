@@ -19,6 +19,7 @@ from dotenv import load_dotenv
 load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+
 # --- General Settings ---
 
 # A secret key for a particular Django installation. This is used to provide cryptographic signing.
@@ -26,8 +27,17 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
 # Defines the list of hosts/domains that this Django site can serve.
 if os.environ.get('MODE') == 'production':
-    ALLOWED_HOSTS = os.environ.get('PROD_ALLOWED_HOSTS', '').split(',')
+    ALLOWED_HOSTS = os.environ.get('PROD_ALLOWED_HOSTS', 'mytube-metrics,www.mytube-metrics,18.191.182.193').split(',')
     DEBUG = False
+
+    # HTTPS Security
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = True
+
+    SECURE_HSTS_SECONDS = 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
 else:
     ALLOWED_HOSTS = os.environ.get('DEV_ALLOWED_HOSTS', '127.0.0.1,localhost').split(',')
     DEBUG = True
@@ -61,11 +71,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.humanize',
     'metrics',
-    'storages',  # For handling S3 storage
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -102,13 +112,11 @@ if os.environ.get('MODE') == 'production':
             'PASSWORD': os.environ.get("PROD_DB_PASSWORD"),
             'HOST': os.environ.get("PROD_DB_HOST"),
             'PORT': os.environ.get("PROD_DB_PORT"),
-            # 'OPTIONS': {
-            #     'ssl': {
-            #         'ca': os.environ.get('PROD_DB_SSL_CA'),
-            #         'cert': os.environ.get('PROD_DB_SSL_CERT'),
-            #         'key': os.environ.get('PROD_DB_SSL_KEY'),
-            #     }
-            # },
+            'OPTIONS': {
+                'ssl': {
+                    'ca': os.environ.get('PROD_DB_SSL_CA'),
+                }
+            },
         }
     }
 else:
@@ -147,26 +155,8 @@ USE_TZ = True
 # --- Static Files Configuration ---
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
-if os.environ.get('MODE') == 'production':
-    # --- S3 Static Storage Settings (Production) ---
-    AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
-    AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
-    AWS_STORAGE_BUCKET_NAME = os.environ.get('AWS_STORAGE_BUCKET_NAME')
-    AWS_S3_REGION_NAME = os.environ.get('AWS_S3_REGION_NAME')
-    AWS_S3_CUSTOM_DOMAIN = os.environ.get('AWS_S3_CUSTOM_DOMAIN')
-
-    # The URL that static files will be served from.
-    STATIC_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/static/'
-    # The storage backend to use for collectstatic.
-    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    # The absolute path to the directory where collectstatic will gather static files.
-    STATIC_ROOT = BASE_DIR / 'staticfiles'  
-
-else:
-    # --- Local Static Storage Settings (Development) ---
-    # The URL to serve static files from.
-    STATIC_URL = 'static/'
-    # Directories where Django will look for static files.
-    STATICFILES_DIRS = [
-        BASE_DIR / "static",
-    ]
+STATIC_URL = 'static/'
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+STATICFILES_DIRS = [
+    BASE_DIR / "static",
+]
