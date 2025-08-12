@@ -1,6 +1,3 @@
-# Standard Library Imports
-import zipfile
-
 # Third-Party Imports
 import requests
 from django.contrib.auth import login, logout
