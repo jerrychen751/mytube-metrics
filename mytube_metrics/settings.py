@@ -27,13 +27,16 @@ SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY')
 
 # Defines the list of hosts/domains that this Django site can serve.
 if os.environ.get('MODE') == 'production':
-    ALLOWED_HOSTS = os.environ.get('PROD_ALLOWED_HOSTS', 'mytube-metrics,www.mytube-metrics,18.191.182.193').split(',')
+    ALLOWED_HOSTS = os.environ.get('PROD_ALLOWED_HOSTS', 'mytube-metrics.com,www.mytube-metrics.com,3.128.55.16').split(',')
     DEBUG = False
+
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
     # HTTPS Security
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
-    SECURE_SSL_REDIRECT = True
+    CSRF_TRUSTED_ORIGINS = ['https://mytube-metrics.com','https://www.mytube-metrics.com']
+    SECURE_SSL_REDIRECT = False
 
     SECURE_HSTS_SECONDS = 31536000
     SECURE_HSTS_INCLUDE_SUBDOMAINS = True
@@ -113,9 +116,7 @@ if os.environ.get('MODE') == 'production':
             'HOST': os.environ.get("PROD_DB_HOST"),
             'PORT': os.environ.get("PROD_DB_PORT"),
             'OPTIONS': {
-                'ssl': {
-                    'ca': os.environ.get('PROD_DB_SSL_CA'),
-                }
+                'ssl': os.environ.get("PROD_DB_SSL_CA")
             },
         }
     }
