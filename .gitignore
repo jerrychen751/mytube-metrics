@@ -2,7 +2,6 @@
 .env
 venv/
 .venv/
-rds-combined-ca-bundle.pem
 Takeout/
 Takeout.zip
 GEMINI.md
