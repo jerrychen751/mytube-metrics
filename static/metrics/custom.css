@@ -115,8 +115,6 @@ body {
 .chart-container-collapsible.is-expanded::after {
     display: none;
 }
-<<<<<<< Current (Your changes)
-=======
 
 /* Google Material Design Button Styles */
 .gsi-material-button {
@@ -228,8 +226,10 @@ body {
 
 /* Navbar logo styling */
 .navbar-logo {
-  height: 32px;
-  width: auto;
-  max-width: 32px;
-  object-fit: contain;
+  height: 32px !important;
+  width: 32px !important;
+  max-width: 32px !important;
+  max-height: 32px !important;
+  object-fit: contain !important;
+  display: inline-block !important;
 }
