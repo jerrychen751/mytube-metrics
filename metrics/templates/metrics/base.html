@@ -9,7 +9,7 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&family=Roboto:wght@400;500&display=swap" rel="stylesheet">
 
     <!-- Bootstrap and Custom CSS -->
     <link href="{% static 'metrics/bootstrap.min.css' %}" rel="stylesheet">
@@ -24,6 +24,7 @@
                 {% if user.is_authenticated and user.usercredential.profile_picture_url and request.resolver_match.url_name != 'login' %}
                     <img src="{{ user.usercredential.profile_picture_url }}" alt="Profile Picture" class="rounded-circle me-2" width="30" height="30">
                 {% endif %}
+                <img src="{% static 'metrics/images/mytube-metrics-logo.png' %}" alt="MyTube Metrics Logo" class="navbar-logo me-2">
                 MyTube Metrics
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
