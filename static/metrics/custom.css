@@ -56,6 +56,20 @@ body {
     margin-top: 4rem;
 }
 
+.footer .text-muted {
+    color: #adb5bd !important;
+}
+
+.footer a.text-muted {
+    color: #adb5bd !important;
+    text-decoration: none;
+}
+
+.footer a.text-muted:hover {
+    color: #ffffff !important;
+    text-decoration: underline;
+}
+
 .description-text.collapsed {
     max-height: 5.5em; /* Approx 3 lines */
     overflow: hidden;

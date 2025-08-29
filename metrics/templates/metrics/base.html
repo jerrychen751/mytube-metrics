@@ -21,9 +21,6 @@
     <nav class="navbar navbar-expand-lg navbar-light bg-white">
         <div class="container-fluid">
             <a class="navbar-brand fw-bold d-flex align-items-center" href="{% url 'dashboard' %}">
-                {% if user.is_authenticated and user.usercredential.profile_picture_url and request.resolver_match.url_name != 'login' %}
-                    <img src="{{ user.usercredential.profile_picture_url }}" alt="Profile Picture" class="rounded-circle me-2" width="30" height="30">
-                {% endif %}
                 <img src="{% static 'metrics/images/mytube-metrics-logo.png' %}" alt="MyTube Metrics Logo" class="navbar-logo me-2">
                 MyTube Metrics
             </a>
@@ -75,8 +72,16 @@
     </main>
 
     <footer class="footer mt-auto py-3 bg-dark">
-        <div class="container text-center">
-            <span class="text-muted">MyTube Metrics | Analyze Your YouTube Habits</span>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8">
+                    <span class="text-muted">MyTube Metrics | Analyze Your YouTube Habits</span>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    <a href="{% url 'privacy_policy' %}" class="text-muted me-3">Privacy Policy</a>
+                    <a href="{% url 'terms_of_service' %}" class="text-muted">Terms of Service</a>
+                </div>
+            </div>
         </div>
     </footer>
 

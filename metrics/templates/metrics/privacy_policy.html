@@ -1,0 +1,185 @@
+{% extends "metrics/base.html" %}
+
+{% block title %}Privacy Policy - MyTube Metrics{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow-sm mt-4">
+        <div class="card-body p-5">
+          <h1 class="card-title text-center mb-4">Privacy Policy</h1>
+          <p class="text-muted text-center mb-4"><strong>Effective Date:</strong> <span id="effective-date">Loading...</span></p>
+          
+          <div class="privacy-content">
+            <section class="mb-4">
+              <h2>1. Introduction</h2>
+              <p>MyTube Metrics ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, disclose, and safeguard your information when you use our web application that provides YouTube viewing analytics and insights.</p>
+              <p>By using MyTube Metrics, you agree to the collection and use of information in accordance with this Privacy Policy.</p>
+            </section>
+
+            <section class="mb-4">
+              <h2>2. Information We Collect</h2>
+              
+              <h3>2.1 Google Account Information</h3>
+              <p>When you sign in with Google, we collect:</p>
+              <ul>
+                <li>Your Google account email address</li>
+                <li>Your name (first and last name)</li>
+                <li>Your profile picture URL</li>
+                <li>Google account ID for authentication purposes</li>
+              </ul>
+
+              <h3>2.2 YouTube Data</h3>
+              <p>Through the YouTube Data API v3, we access and process:</p>
+              <ul>
+                <li><strong>YouTube Watch History:</strong> Videos you have watched, watch timestamps, and viewing duration (read-only access)</li>
+                <li><strong>Subscription Data:</strong> Channels you are subscribed to and subscription dates (read-only access)</li>
+                <li><strong>Channel Information:</strong> Basic information about channels you watch or subscribe to</li>
+              </ul>
+              <p><strong>Important:</strong> We only request read-only access to your YouTube data. We cannot and do not modify, delete, or upload any content to your YouTube account.</p>
+
+              <h3>2.3 Technical Information</h3>
+              <p>We automatically collect certain technical information:</p>
+              <ul>
+                <li>IP address and general location information</li>
+                <li>Browser type and version</li>
+                <li>Device information</li>
+                <li>Access times and referring website addresses</li>
+              </ul>
+            </section>
+
+            <section class="mb-4">
+              <h2>3. How We Use Your Information</h2>
+              <p>We use the collected information solely to:</p>
+              <ul>
+                <li><strong>Provide Analytics:</strong> Generate insights about your YouTube viewing habits, subscription patterns, and content preferences</li>
+                <li><strong>Create Visualizations:</strong> Display charts, graphs, and statistics based on your YouTube data</li>
+                <li><strong>Personalize Experience:</strong> Customize the application interface and recommendations based on your viewing patterns</li>
+                <li><strong>Authentication:</strong> Verify your identity and maintain your login session</li>
+                <li><strong>Service Improvement:</strong> Analyze usage patterns to improve our application features (using aggregated, anonymized data only)</li>
+              </ul>
+              
+              <p><strong>Limited Use Disclosure:</strong> MyTube Metrics' use of information received from Google APIs adheres to <a href="https://developers.google.com/terms/api-services-user-data-policy" target="_blank">Google API Services User Data Policy</a>, including the Limited Use requirements.</p>
+            </section>
+
+            <section class="mb-4">
+              <h2>4. Data Storage and Security</h2>
+              
+              <h3>4.1 Data Storage</h3>
+              <p>Your data is stored securely on our servers with the following measures:</p>
+              <ul>
+                <li>All data transmissions are encrypted using HTTPS/TLS</li>
+                <li>Database access is restricted and monitored</li>
+                <li>Regular security updates and patches are applied</li>
+                <li>Access tokens are encrypted and stored securely</li>
+              </ul>
+
+              <h3>4.2 Data Retention</h3>
+              <p>We retain your data only as long as necessary to provide our services:</p>
+              <ul>
+                <li>YouTube data is refreshed periodically and old data is automatically purged</li>
+                <li>Account information is retained while your account is active</li>
+                <li>You can request data deletion at any time by contacting us</li>
+              </ul>
+            </section>
+
+            <section class="mb-4">
+              <h2>5. Information Sharing and Disclosure</h2>
+              <p><strong>We do not sell, trade, or otherwise transfer your personal information to third parties.</strong></p>
+              
+              <p>We may disclose your information only in the following limited circumstances:</p>
+              <ul>
+                <li><strong>Legal Requirements:</strong> When required by law, court order, or government regulation</li>
+                <li><strong>Service Providers:</strong> To trusted third-party service providers who assist in operating our application (e.g., hosting providers) under strict confidentiality agreements</li>
+                <li><strong>Safety and Security:</strong> To protect the rights, property, or safety of MyTube Metrics, our users, or others</li>
+              </ul>
+            </section>
+
+            <section class="mb-4">
+              <h2>6. Your Rights and Choices</h2>
+              <p>You have the following rights regarding your personal information:</p>
+              <ul>
+                <li><strong>Access:</strong> Request access to the personal information we hold about you</li>
+                <li><strong>Correction:</strong> Request correction of inaccurate or incomplete information</li>
+                <li><strong>Deletion:</strong> Request deletion of your personal information and account</li>
+                <li><strong>Data Portability:</strong> Request a copy of your data in a portable format</li>
+                <li><strong>Revoke Access:</strong> Revoke our access to your Google account at any time through your Google Account settings</li>
+              </ul>
+              
+              <p>To exercise these rights, please contact us at the information provided below.</p>
+            </section>
+
+            <section class="mb-4">
+              <h2>7. Third-Party Services</h2>
+              <p>Our application integrates with:</p>
+              <ul>
+                <li><strong>Google OAuth 2.0:</strong> For secure authentication</li>
+                <li><strong>YouTube Data API v3:</strong> For accessing your YouTube data</li>
+              </ul>
+              <p>These services have their own privacy policies. We encourage you to review:</p>
+              <ul>
+                <li><a href="https://policies.google.com/privacy" target="_blank">Google Privacy Policy</a></li>
+                <li><a href="https://www.youtube.com/howyoutubeworks/our-commitments/protecting-user-data/" target="_blank">YouTube Privacy Information</a></li>
+              </ul>
+            </section>
+
+            <section class="mb-4">
+              <h2>8. Children's Privacy</h2>
+              <p>Our service is not intended for children under 13 years of age. We do not knowingly collect personal information from children under 13. If you are a parent or guardian and believe your child has provided us with personal information, please contact us.</p>
+            </section>
+
+            <section class="mb-4">
+              <h2>9. Changes to This Privacy Policy</h2>
+              <p>We may update this Privacy Policy from time to time. We will notify you of any changes by:</p>
+              <ul>
+                <li>Posting the new Privacy Policy on this page</li>
+                <li>Updating the "Effective Date" at the top of this Privacy Policy</li>
+                <li>Sending an email notification for significant changes</li>
+              </ul>
+              <p>Your continued use of the service after any modifications indicates your acceptance of the updated Privacy Policy.</p>
+            </section>
+
+            <section class="mb-4">
+              <h2>10. Contact Information</h2>
+              <p>If you have any questions about this Privacy Policy or our data practices, please contact us:</p>
+              <ul>
+                <li><strong>Email:</strong> <a href="mailto:cmhqinfoglobal@gmail.com">cmhqinfoglobal@gmail.com</a></li>
+              </ul>
+            </section>
+
+            <section class="mb-4">
+              <h2>11. Compliance</h2>
+              <p>This Privacy Policy complies with:</p>
+              <ul>
+                <li>Google API Services User Data Policy</li>
+                <li>YouTube API Services Terms of Service</li>
+                <li>General Data Protection Regulation (GDPR) where applicable</li>
+                <li>California Consumer Privacy Act (CCPA) where applicable</li>
+              </ul>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const effectiveDateElement = document.getElementById('effective-date');
+    const today = new Date();
+    
+    // Format date in user's locale (e.g., "August 28, 2024")
+    const options = { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric',
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+    };
+    
+    const formattedDate = today.toLocaleDateString('en-US', options);
+    effectiveDateElement.textContent = formattedDate;
+});
+</script>
+{% endblock %}

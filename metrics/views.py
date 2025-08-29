@@ -140,3 +140,11 @@ def viewing_evolution(request):
     except RefreshError:
         logout(request)
         return redirect('login')
+
+# --- Privacy Policy Page (privacy-policy/) ---
+def privacy_policy(request):
+    return render(request, 'metrics/privacy_policy.html')
+
+# --- Terms of Service Page (terms-of-service/) ---
+def terms_of_service(request):
+    return render(request, 'metrics/terms_of_service.html')

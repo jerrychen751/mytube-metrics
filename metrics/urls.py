@@ -14,6 +14,8 @@ urlpatterns = [
     path('recommended-videos/', views.recommended_videos, name='recommended_videos'),
     path('recommended-videos/ajax/', views.get_recommended_videos_ajax, name='get_recommended_videos_ajax'),
     path('viewing-evolution/', views.viewing_evolution, name='viewing_evolution'),
+    path('privacy-policy/', views.privacy_policy, name='privacy_policy'),
+    path('terms-of-service/', views.terms_of_service, name='terms_of_service'),
 ]
 
 # use `name` argument to avoid hardcoding (change URL path w/o changing references throughout code)

@@ -1,0 +1,241 @@
+{% extends "metrics/base.html" %}
+
+{% block title %}Terms of Service - MyTube Metrics{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-lg-8">
+      <div class="card shadow-sm mt-4">
+        <div class="card-body p-5">
+          <h1 class="card-title text-center mb-4">Terms of Service</h1>
+          <p class="text-muted text-center mb-4"><strong>Effective Date:</strong> <span id="effective-date">Loading...</span></p>
+          
+          <div class="terms-content">
+            <section class="mb-4">
+              <h2>1. Acceptance of Terms</h2>
+              <p>By accessing and using MyTube Metrics ("the Service," "we," "us," or "our"), you accept and agree to be bound by the terms and provision of this agreement. If you do not agree to abide by the above, please do not use this service.</p>
+              <p>These Terms of Service ("Terms") govern your use of our web application that provides YouTube viewing analytics and insights.</p>
+            </section>
+
+            <section class="mb-4">
+              <h2>2. Description of Service</h2>
+              <p>MyTube Metrics is a web application that:</p>
+              <ul>
+                <li>Analyzes your YouTube viewing history and subscription data</li>
+                <li>Provides insights and visualizations about your viewing habits</li>
+                <li>Offers personalized analytics and recommendations</li>
+                <li>Operates with read-only access to your YouTube data</li>
+              </ul>
+              <p>The Service requires authentication with your Google account and authorization to access your YouTube data through Google's official APIs.</p>
+            </section>
+
+            <section class="mb-4">
+              <h2>3. User Requirements and Eligibility</h2>
+              
+              <h3>3.1 Age Requirements</h3>
+              <p>You must be at least 13 years old to use this Service. If you are between 13 and 18 years old, you must have parental consent to use the Service.</p>
+
+              <h3>3.2 Google Account Requirements</h3>
+              <p>To use the Service, you must:</p>
+              <ul>
+                <li>Have a valid Google account</li>
+                <li>Have a YouTube account with viewing history</li>
+                <li>Grant necessary permissions for the Service to access your YouTube data</li>
+                <li>Comply with Google's Terms of Service and YouTube's Terms of Service</li>
+              </ul>
+            </section>
+
+            <section class="mb-4">
+              <h2>4. User Responsibilities</h2>
+              <p>By using the Service, you agree to:</p>
+              <ul>
+                <li>Provide accurate and complete information when creating your account</li>
+                <li>Maintain the security of your account credentials</li>
+                <li>Notify us immediately of any unauthorized use of your account</li>
+                <li>Use the Service only for lawful purposes and in accordance with these Terms</li>
+                <li>Not attempt to gain unauthorized access to any part of the Service</li>
+                <li>Not interfere with or disrupt the Service or servers connected to the Service</li>
+                <li>Comply with all applicable local, state, national, and international laws and regulations</li>
+              </ul>
+            </section>
+
+            <section class="mb-4">
+              <h2>5. Prohibited Activities</h2>
+              <p>You may not use the Service to:</p>
+              <ul>
+                <li>Violate any applicable laws or regulations</li>
+                <li>Transmit any harmful, threatening, abusive, or defamatory content</li>
+                <li>Attempt to reverse engineer, decompile, or disassemble any part of the Service</li>
+                <li>Use automated systems (bots, scrapers) to access the Service</li>
+                <li>Share your account credentials with others</li>
+                <li>Attempt to gain unauthorized access to other users' accounts or data</li>
+                <li>Use the Service for commercial purposes without our written consent</li>
+                <li>Circumvent any security measures or access controls</li>
+                <li>Upload, transmit, or distribute viruses or malicious code</li>
+                <li>Impersonate any person or entity or misrepresent your affiliation</li>
+              </ul>
+            </section>
+
+            <section class="mb-4">
+              <h2>6. Data and Privacy</h2>
+              
+              <h3>6.1 Data Access</h3>
+              <p>The Service accesses your YouTube data solely for the purpose of providing analytics and insights. We:</p>
+              <ul>
+                <li>Only request read-only access to your YouTube data</li>
+                <li>Do not modify, delete, or upload content to your YouTube account</li>
+                <li>Process your data in accordance with our Privacy Policy</li>
+                <li>Comply with Google's API Services User Data Policy</li>
+              </ul>
+
+              <h3>6.2 Data Ownership</h3>
+              <p>You retain ownership of your data. We do not claim ownership of any content or data you provide or that we access through YouTube APIs.</p>
+            </section>
+
+            <section class="mb-4">
+              <h2>7. Intellectual Property</h2>
+              
+              <h3>7.1 Service Content</h3>
+              <p>The Service, including its original content, features, and functionality, is owned by MyTube Metrics and is protected by international copyright, trademark, patent, trade secret, and other intellectual property laws.</p>
+
+              <h3>7.2 User Content</h3>
+              <p>Your YouTube data and any analytics generated from it remain your property. However, you grant us a limited license to process and analyze this data to provide the Service.</p>
+
+              <h3>7.3 Third-Party Content</h3>
+              <p>The Service may contain content from YouTube and Google. Such content remains the property of their respective owners and is subject to their terms of service.</p>
+            </section>
+
+            <section class="mb-4">
+              <h2>8. Service Availability</h2>
+              <p>We strive to provide continuous service availability, but we cannot guarantee that the Service will be available at all times. The Service may be temporarily unavailable due to:</p>
+              <ul>
+                <li>Scheduled maintenance</li>
+                <li>Technical difficulties</li>
+                <li>Internet connectivity issues</li>
+                <li>Third-party service interruptions (Google/YouTube APIs)</li>
+                <li>Force majeure events</li>
+              </ul>
+            </section>
+
+            <section class="mb-4">
+              <h2>9. Limitation of Liability</h2>
+              <p>To the fullest extent permitted by applicable law:</p>
+              <ul>
+                <li>The Service is provided "as is" and "as available" without warranties of any kind</li>
+                <li>We disclaim all warranties, express or implied, including merchantability and fitness for a particular purpose</li>
+                <li>We shall not be liable for any indirect, incidental, special, consequential, or punitive damages</li>
+                <li>Our total liability shall not exceed the amount paid by you for the Service in the 12 months preceding the claim</li>
+                <li>We are not responsible for any damages arising from your use of the Service or reliance on any analytics provided</li>
+              </ul>
+            </section>
+
+            <section class="mb-4">
+              <h2>10. Indemnification</h2>
+              <p>You agree to indemnify, defend, and hold harmless MyTube Metrics and its officers, directors, employees, agents, and affiliates from and against any claims, damages, obligations, losses, liabilities, costs, or debt arising from:</p>
+              <ul>
+                <li>Your use of the Service</li>
+                <li>Your violation of these Terms</li>
+                <li>Your violation of any third-party rights</li>
+                <li>Any content you submit or transmit through the Service</li>
+              </ul>
+            </section>
+
+            <section class="mb-4">
+              <h2>11. Termination</h2>
+              
+              <h3>11.1 Termination by You</h3>
+              <p>You may terminate your account at any time by:</p>
+              <ul>
+                <li>Revoking access permissions in your Google Account settings</li>
+                <li>Contacting us to request account deletion</li>
+                <li>Ceasing to use the Service</li>
+              </ul>
+
+              <h3>11.2 Termination by Us</h3>
+              <p>We may terminate or suspend your access to the Service immediately, without prior notice, if you:</p>
+              <ul>
+                <li>Violate these Terms</li>
+                <li>Engage in prohibited activities</li>
+                <li>Pose a security risk to the Service or other users</li>
+                <li>Provide false or misleading information</li>
+              </ul>
+
+              <h3>11.3 Effect of Termination</h3>
+              <p>Upon termination:</p>
+              <ul>
+                <li>Your right to use the Service will cease immediately</li>
+                <li>We will delete your account data in accordance with our Privacy Policy</li>
+                <li>Provisions that should survive termination will remain in effect</li>
+              </ul>
+            </section>
+
+            <section class="mb-4">
+              <h2>12. Changes to Terms</h2>
+              <p>We reserve the right to modify these Terms at any time. We will notify users of significant changes by:</p>
+              <ul>
+                <li>Posting the updated Terms on this page</li>
+                <li>Updating the "Effective Date" at the top of these Terms</li>
+                <li>Sending email notifications for material changes</li>
+              </ul>
+              <p>Your continued use of the Service after any modifications indicates your acceptance of the updated Terms.</p>
+            </section>
+
+            <section class="mb-4">
+              <h2>13. Governing Law and Jurisdiction</h2>
+              <p>These Terms shall be governed by and construed in accordance with the laws of [Your Jurisdiction], without regard to its conflict of law provisions. Any disputes arising from these Terms or the Service shall be resolved in the courts of [Your Jurisdiction].</p>
+            </section>
+
+            <section class="mb-4">
+              <h2>14. Severability</h2>
+              <p>If any provision of these Terms is held to be invalid or unenforceable, the remaining provisions will remain in full force and effect. The invalid or unenforceable provision will be replaced with a valid provision that most closely matches the intent of the original provision.</p>
+            </section>
+
+            <section class="mb-4">
+              <h2>15. Entire Agreement</h2>
+              <p>These Terms, together with our Privacy Policy, constitute the entire agreement between you and MyTube Metrics regarding the Service and supersede all prior agreements and understandings.</p>
+            </section>
+
+            <section class="mb-4">
+              <h2>16. Contact Information</h2>
+              <p>If you have any questions about these Terms, please contact us:</p>
+              <ul>
+                <li><strong>Email:</strong> <a href="mailto:cmhqinfoglobal@gmail.com">cmhqinfoglobal@gmail.com</a></li>
+              </ul>
+            </section>
+
+            <section class="mb-4">
+              <h2>17. Compliance with Third-Party Terms</h2>
+              <p>Your use of the Service is also subject to:</p>
+              <ul>
+                <li><a href="https://policies.google.com/terms" target="_blank">Google Terms of Service</a></li>
+                <li><a href="https://www.youtube.com/t/terms" target="_blank">YouTube Terms of Service</a></li>
+                <li><a href="https://developers.google.com/terms" target="_blank">Google APIs Terms of Service</a></li>
+              </ul>
+              <p>You must comply with all applicable third-party terms and policies when using the Service.</p>
+            </section>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const effectiveDateElement = document.getElementById('effective-date');
+    const today = new Date();
+    
+    // Format date in user's locale (e.g., "August 28, 2024")
+    const options = { 
+        year: 'numeric', 
+        month: 'long', 
+        day: 'numeric',
+        timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+    };
+    
+    const formattedDate = today.toLocaleDateString('en-US', options);
+    effectiveDateElement.textContent = formattedDate;
+});
+</script>
+{% endblock %}
