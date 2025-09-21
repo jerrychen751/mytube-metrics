@@ -3,7 +3,8 @@
 MyTube Metrics is a web application that provides insightful analytics and visualizations of YouTube viewing habits. It leverages the YouTube Data API to help users understand their content consumption, channel engagement, and how their viewing patterns have changed over time.
 
 Visit here --> https://mytube-metrics.com/
-(in the process of obtaining approval from Google for sensitive API scope)
+
+Update: stopped the AWS EC2 instance because it was getting too expensive; perhaps in the future I'll start it up again
 
 ## Motivation
 
